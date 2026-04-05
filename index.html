@@ -1,241 +1,110 @@
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Lập Dự Toán KH&CN</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #0066CC;
-            --bg: #F5F9FF;
-            --text-main: #111827;
-            --text-light: #6B7280;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-        body {
-            background-color: #f5f9ff;
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(212,100%,89%,1) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, hsla(208,100%,86%,1) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, hsla(212,100%,94%,1) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, hsla(222,100%,94%,1) 0px, transparent 50%);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: url('data:image/svg+xml;utf8,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');
-            opacity: 0.04;
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        .header, .card-container {
-            z-index: 1;
-            position: relative;
-        }
 
-        .header {
-            text-align: center;
-            margin-bottom: 60px;
-            animation: fadeInDown 0.8s ease-out;
-        }
-        .header .logo {
-            font-size: 56px;
-            color: var(--primary);
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            font-size: 36px;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            margin-bottom: 12px;
-        }
-        .header p {
-            font-size: 18px;
-            color: var(--text-light);
-            font-weight: 400;
-        }
-
-        .card-container {
-            display: flex;
-            gap: 40px;
-            max-width: 1000px;
-            padding: 0 20px;
-        }
-
-        .action-card {
-            background: #ffffff;
-            width: 320px;
-            border-radius: 24px;
-            padding: 40px 30px;
-            text-align: center;
-            text-decoration: none;
-            color: var(--text-main);
-            position: relative;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(0, 102, 204, 0.05);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden;
-            display: block;
-            cursor: pointer;
-            opacity: 0;
-            animation: fadeInUp 0.8s forwards;
-        }
-
-        .action-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 102, 204, 0.12);
-            border-color: rgba(0, 102, 204, 0.2);
-        }
-
-        .action-card.disabled {
-            cursor: not-allowed;
-            opacity: 0;
-            animation: fadeInUp 0.8s 0.2s forwards;
-        }
-        
-        .action-card.disabled:hover {
-            transform: none;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
-            border-color: rgba(0, 102, 204, 0.05);
-        }
-
-        .icon-circle {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #F0F7FF;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            margin: 0 auto 24px;
-            transition: all 0.4s;
-        }
-
-        .action-card:hover .icon-circle {
-            background: var(--primary);
-            color: #ffffff;
-            transform: scale(1.05);
-        }
-
-        .action-card.disabled .icon-circle {
-            background: #F3F4F6;
-            color: #9CA3AF;
-        }
-        .action-card.disabled:hover .icon-circle {
-            background: #F3F4F6;
-            color: #9CA3AF;
-            transform: none;
-        }
-
-        h2 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        p.desc {
-            font-size: 15px;
-            color: var(--text-light);
-            line-height: 1.5;
-            margin-bottom: 30px;
-        }
-
-        .btn-fake {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--primary);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .action-card:hover .btn-fake {
-            gap: 12px;
-        }
-
-        .badge {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: #F3F4F6;
-            color: #6B7280;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 20px;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 768px) {
-            .card-container {
-                flex-direction: column;
-                align-items: center;
-                gap: 24px;
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#004033", // Dark green from reference
+                    "on-primary": "#ffffff",
+                    "surface": "#f8f9f8", // Light background from reference
+                    "on-surface": "#00241c",
+                    "outline": "#e0e4e2",
+            },
+            "fontFamily": {
+                    "body": ["Manrope", "sans-serif"],
+                    "inter": ["Inter", "sans-serif"]
             }
-            .header h1 { font-size: 28px; }
-        }
-    </style>
+          },
+        },
+      }
+    </script>
+<style>body {
+    font-family: "Manrope", sans-serif;
+    background-color: #f8f9f8;
+    background-image: url(https://lh3.googleusercontent.com/aida/ADBb0ugAH-iU4zguMxirqg4i6atHapSuRvMlwG5ReAzuMhGjNzpsNeIfakl2C663kj8t8DsAWIUV34K6hUjQi5OUnHn5ErehgzIlouhHeXOoj9uiv0NCMv1Spyov29Zt7cJ5PdriuKc87F68IZj7IrgDQmpKXiy6zm6GJfXU2RdfeXoNLieEkz0JHsq8Cq4bUnTQfSOUsbeyNsvOcLoahdAALx8TfxUZVVL4X9pysQeoG1gxA__msRNlp7rcHJ_NGxeDdREyhhWYr3bp_w);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat
+    }
+.btn-shadow {
+    box-shadow: 0 4px 14px 0 rgba(0, 64, 51, 0.25)
+    }
+.tag-gradient {
+    background: linear-gradient(135deg, rgba(240, 244, 242, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%);
+    border: 1px solid rgba(0, 64, 51, 0.15);
+    backdrop-filter: blur(4px)
+    }
+.highlight-line {
+    position: relative;
+    z-index: 1
+    }
+.highlight-line::after {
+    content: "";
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #d4ff00;
+    /* Neon yellow highlight from reference */
+    z-index: -1
+    }</style>
 </head>
-<body>
-
-    <div class="header">
-        <i class="fa-solid fa-wallet logo"></i>
-        <h1>Hệ Thống Lập Dự Toán</h1>
-        <p>Chọn phương thức lập biểu mẫu dự toán phù hợp.</p>
-    </div>
-
-    <div class="card-container">
-        <!-- ĐỀ TÀI (Active) -->
-        <a href="detai.html" class="action-card">
-            <div class="icon-circle">
-                <i class="fa-solid fa-file-invoice-dollar"></i>
-            </div>
-            <h2>Lập Dự Toán Đề Tài</h2>
-            <p class="desc">Phân bổ nguồn kinh phí ngân sách nhà nước hoặc tổ chức.</p>
-            <div class="btn-fake">Tiếp tục <i class="fa-solid fa-arrow-right"></i></div>
-        </a>
-
-        <!-- DỰ ÁN (Disabled / Coming soon) -->
-        <div class="action-card disabled">
-            <div class="badge"><i class="fa-solid fa-clock"></i> Sắp ra mắt</div>
-            <div class="icon-circle">
-                <i class="fa-solid fa-building-columns"></i>
-            </div>
-            <h2 style="color: #9CA3AF;">Lập Dự Toán Dự Án</h2>
-            <p class="desc">Chức năng quản lý các dự án chuyên sâu đang được phát triển.</p>
-            <div class="btn-fake" style="color: #9CA3AF;">Chưa sẵn sàng</div>
-        </div>
-    </div>
-
-</body>
-</html>
+<body class="overflow-hidden">
+<!-- Main Container -->
+<div class="relative h-screen w-screen flex items-center justify-center overflow-hidden">
+<!-- Overlay to ensure readability if image is too bright -->
+<div class="absolute inset-0 bg-white/40 pointer-events-none"></div>
+<!-- Central Content Hub -->
+<div class="relative z-10 max-w-4xl px-6 text-center">
+<!-- Top Badge -->
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full tag-gradient mb-8">
+<span class="material-symbols-outlined text-primary text-sm font-bold">bolt</span>
+<span class="text-[10px] font-bold tracking-widest uppercase text-primary">SỞ KHOA HỌC VÀ CÔNG NGHỆ THÀNH PHỐ HUẾ</span>
+</div>
+<!-- Main Heading -->
+<h1 class="font-extrabold text-4xl md:text-6xl lg:text-7xl text-primary leading-[1.1] mb-8 tracking-tight">
+            Hệ thống lập dự toán <br/>
+<span class="highlight-line">nhiệm vụ KH&amp;CN</span>
+</h1>
+<!-- Subtext -->
+<p class="text-on-surface/80 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-semibold">
+            Công cụ hỗ trợ quản lý và lập dự toán ngân sách khoa học công nghệ, 
+            giúp nhà khoa học và đơn vị quản lý làm việc hiệu quả và minh bạch hơn.
+        </p>
+<!-- CTA Buttons -->
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+<a href="detai.html" class="w-full sm:w-auto bg-primary text-white px-8 py-4 rounded-xl font-bold text-base btn-shadow hover:bg-[#005241] transition-all flex items-center justify-center gap-3 hover:-translate-y-1">
+<span class="material-symbols-outlined text-xl">biotech</span>
+                Lập dự toán đề tài
+</a>
+<button style="opacity: 0.6; cursor: not-allowed;" class="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-base transition-all flex items-center justify-center gap-3 bg-primary text-white btn-shadow">
+<span class="material-symbols-outlined text-xl">architecture</span>
+                Lập dự toán dự án
+            </button>
+</div>
+<!-- Metric Footer -->
+<div class="mt-20 flex items-center justify-center gap-10">
+<div class="text-left">
+<p class="text-2xl font-extrabold text-primary">2026</p>
+</div>
+<div class="w-px h-10 bg-primary/20"></div>
+<div class="text-left">
+<p class="text-2xl font-extrabold text-primary">Sở KH&amp;CN thành phố Huế</p>
+<p class="text-[10px] font-bold text-on-surface/60 uppercase tracking-widest">Copyright</p>
+</div>
+</div>
+</div>
+<!-- Ambient Visuals - Subtle bottom fade -->
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/20 pointer-events-none"></div>
+</div>
+</body></html>
