@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hệ Thống Lập Dự Toán Chi Tiết</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+<style>
+        :root {
+            --sidebar-width: 260px;
+            --primary-bg: #f5f5f7;       /* Apple Gray Background */
+            --sidebar-bg: rgba(245, 245, 247, 0.72); /* Mac translucent sidebar */
+            --sidebar-hover: rgba(0, 0, 0, 0.04);
+            --sidebar-active: #0066CC;   /* Cupertino Blue from Design System */
+            --text-main: #1d1d1f;        /* Apple Dark Text */
+            --text-light: #86868b;       /* Apple Secondary Text */
+            --white: #ffffff;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --radius: 12px;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: var(--primary-bg);
+            overflow: hidden;
+            color: var(--text-main);
+        }
+
+        /* ----- SIDEBAR ----- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            color: var(--text-light);
+            display: flex; flex-direction: column;
+            border-right: 1px solid var(--border-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding: 32px 24px;
+            display: flex; align-items: center; gap: 14px;
+        }
+
+        .sidebar-header i { font-size: 26px; color: var(--sidebar-active); opacity: 0.9; }
+        .sidebar-header h1 { 
+            font-size: 17px; font-weight: 700; color: var(--text-main); 
+            line-height: 1.2; letter-spacing: -0.03em;
+        }
+
+        .nav-section-title { 
+            padding: 24px 24px 10px; font-size: 10px; text-transform: uppercase; 
+            letter-spacing: 0.08em; font-weight: 700; color: var(--text-light); opacity: 0.6;
+        }
+        
+        .nav-list { list-style: none; padding: 0 16px; flex: 1; overflow-y: auto; }
+        .nav-list::-webkit-scrollbar { width: 4px; }
+        .nav-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+
+        .nav-item { margin-bottom: 2px; }
+        .nav-link {
+            display: flex; align-items: center; gap: 12px; padding: 10px 14px; color: var(--text-main);
+            text-decoration: none; border-radius: 10px; font-size: 13.5px; font-weight: 500; 
+            transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        .nav-link i { font-size: 16px; width: 22px; text-align: center; color: var(--text-light); transition: color 0.2s; }
+        .nav-link:hover { background-color: var(--sidebar-hover); }
+        .nav-link.active { background-color: var(--sidebar-active); color: var(--white); box-shadow: 0 4px 12px rgba(0, 102, 204, 0.25); }
+        .nav-link.active i { color: var(--white); }
+
+        .summary-btn {
+            margin-top: 8px;
+            background-color: rgba(255, 159, 10, 0.08) !important;
+            color: #d17800 !important;
+        }
+        .summary-btn i { color: #ff9f0a !important; }
+        .summary-btn:hover { background-color: rgba(255, 159, 10, 0.15) !important; }
+        .summary-btn.active { 
+            background-color: #ff9f0a !important; 
+            color: white !important; 
+            box-shadow: 0 4px 12px rgba(255, 159, 10, 0.3) !important;
+        }
+        .summary-btn.active i { color: white !important; }
+
+        /* ----- MAIN CONTENT ----- */
+        .main-content {
+            flex: 1; display: flex; flex-direction: column; overflow: hidden; background-color: #fbfbfd;
+        }
+
+        .top-navbar {
+            height: 72px; 
+            background-color: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+            border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 32px; z-index: 5;
+        }
+
+        .breadcrumb { font-size: 13px; font-weight: 500; color: var(--text-light); display: flex; align-items: center; gap: 10px; }
+        .breadcrumb i { color: #d1d1d6; font-size: 10px;}
+        .breadcrumb .current-page { font-weight: 600; color: var(--text-main); font-size: 15px; letter-spacing: -0.01em; }
+
+        .btn-print, #btnExport {
+            border: none; padding: 8px 18px; border-radius: 980px;
+            font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-print { background-color: #f2f2f7; color: var(--text-main); }
+        .btn-print:hover { background-color: #e5e5ea; transform: translateY(-1px); }
+        #btnExport { background-color: var(--sidebar-active); color: white; box-shadow: 0 4px 10px rgba(0, 102, 204, 0.15); }
+        #btnExport:hover { background-color: #005bb8; transform: translateY(-1px); box-shadow: 0 6px 15px rgba(0, 102, 204, 0.2); }
+        button:active { transform: scale(0.96) !important; }
+
+        .content-area {
+            flex: 1; padding: 32px; overflow: hidden; display: flex; position: relative;
+        }
+
+        /* ----- VÙNG IFRAME / SUMMARY ----- */
+        .view-wrapper {
+            flex: 1; background: var(--white); border-radius: 18px; 
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(0,0,0,0.05); overflow: hidden; opacity: 0; pointer-events: none;
+            position: absolute; top: 32px; left: 32px; right: 32px; bottom: 32px;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column;
+            transform: translateY(10px);
+        }
+        .view-wrapper.active {
+            opacity: 1; pointer-events: all; z-index: 2; transform: translateY(0);
+        }
+
+        iframe { width: 100%; height: 100%; border: none; display: block; }
+
+        /* ----- THIẾT KẾ BẢNG TỔNG HỢP ----- */
+        .summary-container { padding: 48px; overflow-y: auto; height: 100%; scroll-behavior: smooth; }
+        .summary-title { 
+            text-align: center; color: var(--text-main); font-size: 26px; 
+            font-weight: 800; margin-bottom: 40px; letter-spacing: -0.04em;
+        }
+        .summary-table { 
+            width: 100%; border-collapse: separate; border-spacing: 0; 
+            font-size: 14.5px; margin-bottom: 30px; border-radius: var(--radius); 
+            overflow: hidden; border: 1px solid var(--border-color);
+        }
+        .summary-table th, .summary-table td { padding: 16px 20px; text-align: right; border-bottom: 1px solid var(--border-color); }
+        .summary-table th { 
+            background-color: #fbfbfd; font-weight: 600; color: var(--text-light); 
+            text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .summary-table th:nth-child(2), .summary-table td:nth-child(2) { text-align: left; }
+        .summary-table td:nth-child(1) { text-align: center; color: var(--text-light); font-weight: 500; }
+        .summary-table tbody tr:last-child td { border-bottom: none; }
+        .summary-table tbody tr:hover { background-color: #f5f5f7; }
+        
+        .row-total { background-color: #fbfbfd; font-weight: 700; font-size: 16px; }
+        .row-total td { border-top: 2px solid var(--text-main); }
+        
+        .val-total { color: var(--text-main); font-weight: 700; }
+        .val-nsnn { color: #0066CC; font-weight: 600; }
+        .val-ngoai { color: #af52de; font-weight: 600; }
+
+        .loading-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); 
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 20; opacity: 0; pointer-events: none; transition: 0.4s;
+        }
+        .loading-overlay.active { opacity: 1; pointer-events: all; }
+        .spinner { 
+            width: 32px; height: 32px; border: 3px solid rgba(0, 102, 204, 0.1); 
+            border-top: 3px solid var(--sidebar-active); border-radius: 50%; 
+            animation: spin 0.7s cubic-bezier(0.5, 0, 0.5, 1) infinite; margin-bottom: 20px;
+        }
+        
+        .error-msg { 
+            color: #ff3b30; font-size: 13px; max-width: 320px; 
+            text-align: center; margin-top: 15px; display: none; 
+            padding: 16px; background: #fff2f2; border-radius: 12px; border: 1px solid #ffcccc;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media print {
+            .sidebar, .top-navbar, #btnExport, #btnPrint { display: none !important; }
+            .content-area { padding: 0 !important; }
+            .view-wrapper { border: none !important; box-shadow: none !important; position: static !important; opacity: 1 !important; transform: none !important; }
+            .summary-container { padding: 20px !important; }
+            body { background: white !important; }
+        }
+    </style>
+</head>
+<body>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+<div class="sidebar-header">
+<i class="fa-solid fa-cube"></i>
+<h1>Lập dự toán kinh phí<br/><span style="color:var(--text-light); font-weight:400; font-size:13px; letter-spacing:0;">Nhiệm vụ KH&CN</span></h1>
+</div>
+<a href="index.html" class="nav-link" style="margin: 0 16px 20px; background: rgba(0, 102, 204, 0.08); color: #0066CC; border: 1px solid rgba(0, 102, 204, 0.2);">
+<i class="fa-solid fa-arrow-left" style="color: #0066CC;"></i><span>Về trang chủ Landing</span>
+</a>
+<div class="nav-section-title">Hạng mục chi phí</div>
+<ul class="nav-list">
+<li class="nav-item">
+<a class="nav-link active" href="#" onclick="switchTab('K1', this, 'Khoản 1: Thù lao nhân sự'); return false;">
+<i class="fa-solid fa-users-gear"></i><span>K1. Thù lao nhân sự</span>
+</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#" onclick="switchTab('K2', this, 'Khoản 2: Thuê chuyên gia'); return false;">
+<i class="fa-solid fa-user-tie"></i><span>K2. Thuê chuyên gia</span>
+</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#" onclick="switchTab('K3', this, 'Khoản 3: Nguyên vật liệu'); return false;">
+<i class="fa-solid fa-box-open"></i><span>K3. Nguyên vật liệu</span>
+</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#" onclick="switchTab('K4', this, 'Khoản 4: Thiết bị máy móc'); return false;">
+<i class="fa-solid fa-desktop"></i><span>K4. Thiết bị máy móc</span>
+</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#" onclick="switchTab('K5', this, 'Khoản 5: Xây dựng &amp; Sửa chữa'); return false;">
+<i class="fa-solid fa-hammer"></i><span>K5. Xây dựng, Sửa chữa</span>
+</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#" onclick="switchTab('K6', this, 'Khoản 6: Các khoản chi khác'); return false;">
+<i class="fa-solid fa-receipt"></i><span>K6. Các khoản chi khác</span>
+</a>
+</li>
+<div class="nav-section-title" style="margin-top: 20px;">Hệ thống</div>
+<li class="nav-item">
+<a class="nav-link summary-btn" href="#" onclick="openSummary(this); return false;">
+<i class="fa-solid fa-chart-pie"></i><span>Tổng hợp dự toán</span>
+</a>
+</li>
+</ul>
+</aside>
+<!-- MAIN CONTENT -->
+<main class="main-content">
+<!-- TOP NAVBAR -->
+<header class="top-navbar">
+<div class="breadcrumb">
+<span>Dự toán</span>
+<i class="fa-solid fa-chevron-right"></i>
+<span class="current-page" id="breadcrumb-title">Khoản 1: Thù lao tham gia thực hiện đề tài</span>
+</div>
+<div style="display: flex; gap: 12px;">
+<button id="btnExport" onclick="exportExcel()" style="display: none;">
+<i class="fa-solid fa-file-export"></i> Export Excel
+                </button>
+<button class="btn-print" id="btnPrint" onclick="window.print()" style="display: none;">
+<i class="fa-solid fa-print"></i> Print Report
+                </button>
+</div>
+</header>
+<!-- CONTAINER FOR IFRAMES -->
+<div class="content-area">
+<div class="view-wrapper active" id="view-K1"><iframe src="k1-thu-lao.html"></iframe></div>
+<div class="view-wrapper" id="view-K2"><iframe src="k2-thue-chuyen-gia.html"></iframe></div>
+<div class="view-wrapper" id="view-K3"><iframe src="k3-nvl.html"></iframe></div>
+<div class="view-wrapper" id="view-K4"><iframe src="k4-thiet-bi-may-moc.html"></iframe></div>
+<div class="view-wrapper" id="view-K5"><iframe src="k5-xay-dung-sua-chua.html"></iframe></div>
+<div class="view-wrapper" id="view-K6"><iframe src="k6-chi-khac.html"></iframe></div>
+<!-- TAB TỔNG HỢP (K7) -->
+<div class="view-wrapper" id="view-SUMMARY">
+<div class="loading-overlay" id="loadingOverlay">
+<div class="spinner"></div>
+<div style="font-weight: 600; color: #1d1d1f; font-size: 15px; letter-spacing: -0.01em;">Gom dữ liệu quyết toán...</div>
+<div class="error-msg" id="errorMsg">
+                        Trình duyệt đang chặn truy cập dữ liệu cục bộ (Security).<br/>
+                        Vui lòng sử dụng Live Server hoặc trình duyệt Firefox để xem kết quả tổng hợp.
+                    </div>
+</div>
+<div class="summary-container" id="summaryBox" style="display: none;">
+<h2 class="summary-title">BẢNG TỔNG HỢP KINH PHÍ ĐỀ TÀI</h2>
+<table class="summary-table">
+<thead>
+<tr>
+<th width="8%">STT</th>
+<th width="32%">Nội dung khoản chi</th>
+<th width="20%">Tổng kinh phí (VNĐ)</th>
+<th width="20%">NS Nhà nước (VNĐ)</th>
+<th width="20%">Ngoài NSNN (VNĐ)</th>
+</tr>
+</thead>
+<tbody id="summaryBody">
+<!-- JS Injection -->
+</tbody>
+<tfoot>
+<tr class="row-total">
+<td colspan="2" style="text-align: center; text-transform: uppercase; font-size: 13px; letter-spacing: 0.05em;">Tổng cộng quyết toán:</td>
+<td class="val-total" id="final-total">0 đ</td>
+<td class="val-nsnn" id="final-nsnn">0 đ</td>
+<td class="val-ngoai" id="final-ngoai">0 đ</td>
+</tr>
+</tfoot>
+</table>
+<div style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 24px; color: var(--text-light); font-size: 12px; text-align: center; font-style: italic;">
+                        Báo cáo được trích xuất tự động dựa trên các hạng mục chi phí đã kê khai.
+                    </div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Cấu hình ID của các ô Tổng cần rút ra tương ứng với 6 file
+        const config = [
+            { id: 'view-K1', name: 'Khoản 1. Thù lao nhân sự', totalId: 'grandTotal', nsnnId: 'grandNsnn', ngoaiId: 'grandNgoai' },
+            { id: 'view-K2', name: 'Khoản 2. Thuê chuyên gia', totalId: 'grandTotal', nsnnId: 'grandNsnn', ngoaiId: 'grandNgoai' },
+            { id: 'view-K3', name: 'Khoản 3. Nguyên vật liệu', totalId: 'g_tt', nsnnId: 'g_nsnn_tot_kp', ngoaiId: 'g_ngoai_tot' },
+            { id: 'view-K4', name: 'Khoản 4. Thiết bị máy móc', totalId: 'grandTotal', nsnnId: 'grandTotalNsnn', ngoaiId: 'grandTotalNgoai' },
+            { id: 'view-K5', name: 'Khoản 5. Xây dựng Sửa chữa Nhỏ', totalId: 'grandTotal', nsnnId: 'grandTotalNsnn', ngoaiId: 'grandTotalNgoai' },
+            { id: 'view-K6', name: 'Khoản 6. Các khoản chi khác', totalId: 'g_tt', nsnnId: 'g_nsnn_tot_kp', ngoaiId: 'g_ngoai_tot' }
+        ];
+
+        // 1. HÀM CHUYỂN TAB MƯỢT MÀ (LƯU LẠI STATE)
+        function switchTab(tabId, element, title) {
+            // Đổi active
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Ẩn tất cả views
+            document.querySelectorAll('.view-wrapper').forEach(view => view.classList.remove('active'));
+            
+            // Ẩn nút chức năng nếu không ở tab Tổng hợp
+            document.getElementById('btnPrint').style.display = 'none';
+            document.getElementById('btnExport').style.display = 'none';
+
+            // Hiện view tương ứng
+            document.getElementById('view-' + tabId).classList.add('active');
+            document.getElementById('breadcrumb-title').innerText = title;
+        }
+
+        // 2. HÀM MỞ TAB TỔNG HỢP VÀ BÓC TÁCH DỮ LIỆU CHUI VÀO IFRAME
+        function openSummary(element) {
+            switchTab('SUMMARY', element, 'Bảng Tổng Hợp Kinh Phí Đề Tài');
+            document.getElementById('breadcrumb-title').style.color = 'var(--text-main)';
+            
+            // Hiện nút chức năng (In + Xuất Excel)
+            document.getElementById('btnPrint').style.display = 'flex'; 
+            document.getElementById('btnExport').style.display = 'flex';
+
+            // Hiển thị Overlay Loading
+            const loading = document.getElementById('loadingOverlay');
+            const summaryBox = document.getElementById('summaryBox');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            summaryBox.style.display = 'none';
+            loading.classList.add('active');
+            errorMsg.style.display = 'none';
+
+            // Đợi 0.5s tạo hiệu ứng và gom dữ liệu
+            setTimeout(() => {
+                let s_total = 0, s_nsnn = 0, s_ngoai = 0;
+                let htmlRows = '';
+
+                try {
+                    config.forEach((item, index) => {
+                        // Trỏ vào Iframe
+                        const iframeDoc = document.querySelector(`#${item.id} iframe`).contentWindow.document;
+                        
+                        // Lấy text trong ô Tổng cộng
+                        let txt_total = iframeDoc.getElementById(item.totalId) ? iframeDoc.getElementById(item.totalId).innerText : '0';
+                        let txt_nsnn = iframeDoc.getElementById(item.nsnnId) ? iframeDoc.getElementById(item.nsnnId).innerText : '0';
+                        let txt_ngoai = iframeDoc.getElementById(item.ngoaiId) ? iframeDoc.getElementById(item.ngoaiId).innerText : '0';
+
+                        // Ép kiểu chuỗi "10.000.000 đ" thành số 10000000
+                        let val_total = parseFloat(txt_total.replace(/[^\d]/g, '')) || 0;
+                        let val_nsnn = parseFloat(txt_nsnn.replace(/[^\d]/g, '')) || 0;
+                        let val_ngoai = parseFloat(txt_ngoai.replace(/[^\d]/g, '')) || 0;
+
+                        s_total += val_total;
+                        s_nsnn += val_nsnn;
+                        s_ngoai += val_ngoai;
+
+                        // Tạo HTML cho dòng
+                        htmlRows += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td style="font-weight: 500; color: #1d1d1f;">${item.name}</td>
+                                <td class="val-total">${Math.round(val_total).toLocaleString('vi-VN')} đ</td>
+                                <td class="val-nsnn">${Math.round(val_nsnn).toLocaleString('vi-VN')} đ</td>
+                                <td class="val-ngoai">${Math.round(val_ngoai).toLocaleString('vi-VN')} đ</td>
+                            </tr>
+                        `;
+                    });
+
+                    // Cập nhật DOM
+                    document.getElementById('summaryBody').innerHTML = htmlRows;
+                    document.getElementById('final-total').innerText = Math.round(s_total).toLocaleString('vi-VN') + ' đ';
+                    document.getElementById('final-nsnn').innerText = Math.round(s_nsnn).toLocaleString('vi-VN') + ' đ';
+                    document.getElementById('final-ngoai').innerText = Math.round(s_ngoai).toLocaleString('vi-VN') + ' đ';
+
+                    // Ẩn loading, hiện Data
+                    loading.classList.remove('active');
+                    summaryBox.style.display = 'block';
+
+                } catch (error) {
+                    console.error("Lỗi chặn truy cập chéo:", error);
+                    // Bị chặn Cross-Origin Protocol nếu click đúp vào file trên Chrome
+                    errorMsg.style.display = 'block';
+                }
+
+            }, 500);
+        }
+
+        // 3. HÀM XUẤT EXCEL ĐA SHEET VÀ CHUẨN HOÁ SỐ LIỆU ĐỂ TÍNH TOÁN
+        function exportExcel() {
+            try {
+                // Khởi tạo file Excel
+                let wb = XLSX.utils.book_new();
+
+                // Quét 6 bảng iframe
+                config.forEach((item, index) => {
+                    const iframeDoc = document.querySelector(`#${item.id} iframe`).contentWindow.document;
+                    const originalTable = iframeDoc.querySelector('table');
+                    
+                    if(originalTable) {
+                        // BƯỚC 1: Clone (nhân bản) bảng để tránh làm hỏng giao diện thật
+                        let clonedTable = originalTable.cloneNode(true);
+                        
+                        // BƯỚC 2: Rút ruột giá trị từ <input> ra, cạo bỏ định dạng chữ thành SỐ THUẦN
+                        let originalInputs = originalTable.querySelectorAll('input, select');
+                        let clonedInputs = clonedTable.querySelectorAll('input, select');
+                        
+                        originalInputs.forEach((inp, i) => {
+                            let valStr = (inp.value || "").toString().trim();
+                            // Loại bỏ dấu chấm định dạng Việt Nam nếu đó là tiền (VD: 1.500.000 -> 1500000)
+                            if (/^-?\d{1,3}(\.\d{3})+$/.test(valStr) || (inp.classList && inp.classList.contains('money-input'))) {
+                                valStr = valStr.replace(/\./g, '');
+                            }
+                            
+                            let textNode = document.createTextNode(valStr);
+                            let parentTd = clonedInputs[i].closest('td');
+                            
+                            // Ép kiểu sang Number cho SheetJS hiểu đây là số
+                            if (parentTd && !isNaN(valStr) && valStr !== '') {
+                                parentTd.setAttribute('data-t', 'n');
+                                parentTd.setAttribute('data-v', valStr);
+                            }
+                            
+                            if (clonedInputs[i].parentNode) {
+                                clonedInputs[i].parentNode.replaceChild(textNode, clonedInputs[i]);
+                            }
+                        });
+
+                        // Xóa các nút bấm (như nút Xóa, + Thêm)
+                        clonedTable.querySelectorAll('button').forEach(btn => btn.remove());
+                        
+                        // BƯỚC 3: Quét mọi ô trong bảng để lột sạch chữ "đ" và biến thành số thuần
+                        clonedTable.querySelectorAll('th, td').forEach(cell => {
+                            let text = (cell.textContent || "").trim();
+                            
+                            // Xóa chữ "Thao tác" trên Header
+                            if(cell.tagName.toLowerCase() === 'th' && text.toLowerCase().includes('thao tác')) {
+                                cell.textContent = "";
+                                return;
+                            }
+
+                            // Bắt mọi ô có đuôi "đ" hoặc dấu "-" đại diện cho 0
+                            if (text.endsWith('đ') || text.endsWith(' đ') || text === '-') {
+                                let clean = text.replace(/đ/g, '').trim().replace(/\./g, '');
+                                if (clean === '-') clean = "0";
+                                
+                                if (!isNaN(clean) && clean !== '') {
+                                    // Bơm thuộc tính Dữ liệu chuẩn (Number) cho file Excel nhận diện
+                                    cell.setAttribute('data-t', 'n');
+                                    cell.setAttribute('data-v', clean);
+                                    cell.textContent = clean;
+                                }
+                            }
+                        });
+
+                        // Chuyển khối HTML nàỳ thành Sheet (chế độ raw=false để SheetJS tự động nhận diện dạng số)
+                        let ws = XLSX.utils.table_to_sheet(clonedTable, { raw: false });
+                        XLSX.utils.book_append_sheet(wb, ws, "K" + (index + 1));
+                    }
+                });
+
+                // Nhét Bảng Tổng Hợp làm Sheet cuối cùng
+                const summaryTable = document.querySelector('.summary-table');
+                if (summaryTable) {
+                    let clonedSummary = summaryTable.cloneNode(true);
+                    // Lột bỏ luôn chữ "đ" cho bảng tổng hợp
+                    clonedSummary.querySelectorAll('th, td').forEach(cell => {
+                        let text = (cell.textContent || "").trim();
+                        if (text.endsWith('đ') || text.endsWith(' đ')) {
+                            let clean = text.replace(/đ/g, '').trim().replace(/\./g, '');
+                            if (!isNaN(clean) && clean !== '') {
+                                cell.setAttribute('data-t', 'n');
+                                cell.setAttribute('data-v', clean);
+                                cell.textContent = clean;
+                            }
+                        }
+                    });
+                    
+                    let ws_summary = XLSX.utils.table_to_sheet(clonedSummary, {raw: false});
+                    XLSX.utils.book_append_sheet(wb, ws_summary, "Tổng Hợp");
+                }
+
+                // Xuất file tải về
+                XLSX.writeFile(wb, "DuToanKinhPhi.xlsx");
+
+            } catch (err) {
+                console.error("Lỗi xuất Excel:", err);
+                alert("Lỗi: " + err.message + "\nVui lòng chụp màn hình lỗi dọc này hoặc copy gửi cho tôi nhé!");
+            }
+        }
+    </script>
+</body></html>

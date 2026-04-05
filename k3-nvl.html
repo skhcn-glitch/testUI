@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dự Toán - Khoản 3: Nguyên vật liệu, năng lượng</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f7; padding: 20px; color: #1d1d1f; margin: 0; }
+        .container { display: inline-block; min-width: 100%; box-sizing: border-box; margin: auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); overflow: visible; }
+        h2 { text-align: center; color: #1d1d1f; border-bottom: 1px solid #e5e5ea; padding-bottom: 15px; text-transform: uppercase; font-weight: 600;}
+        
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; font-size: 13px; min-width: 2200px; box-shadow: 0 0 0 1px #e5e5ea; border-radius: 8px; overflow: hidden; }
+        th, td { border: 1px solid #e5e5ea; padding: 10px; text-align: center; vertical-align: middle; }
+        
+        /* Màu sắc Header 4 tầng */
+        th { color: #1d1d1f; padding: 12px 10px; font-weight: 600;}
+        .th-level-1 { background-color: #f5f5f7; border-bottom: 2px solid #d1d1d6; }
+        .th-nsnn { background-color: #e5f9e7; } 
+        .th-ngoai { background-color: #fff1e0; } 
+        .th-sub-nsnn { background-color: #f0fdf4; font-size: 12px; font-weight: 600;}
+        .th-sub-ngoai { background-color: #fff7ed; font-size: 12px; font-weight: 600;}
+        .th-khoan { background-color: #d1f3d9; color: #1d1d1f; font-size: 12px; font-weight: normal; font-style: italic;}
+        .th-kp { background-color: #e5f9e7; font-size: 12px;}
+        
+        /* Input fields */
+        td input[type="text"], td input[type="number"], td select { 
+            width: 95%; padding: 8px; border: 1px solid #d1d1d6; border-radius: 6px; box-sizing: border-box; font-size: 13px; transition: 0.2s; background: #fff; color: #1d1d1f;
+        }
+        td input[type="number"] { width: 80px; text-align: right; }
+        td input:focus, td select:focus { outline: none; border-color: #007aff; box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); }
+        
+        .col-thanh-tien { font-weight: 600; color: #ff3b30; }
+        .col-tong-nsnn { font-weight: 600; color: #34c759; }
+        .col-tong-khoan { color: #1d1d1f; background-color: #f5f5f7; font-style: italic;}
+        .col-tong-ngoai { font-weight: 600; color: #ff9f0a; }
+        
+        .khoan-input { background-color: #f5f5f7 !important; border-color: #e5e5ea !important; color: #1d1d1f !important;}
+        
+        /* Cấu trúc dòng */
+        .row-special-header { background-color: #f5f5f7; font-weight: 600; border-top: 1px solid #e5e5ea;}
+        .row-special-header td { color: #1d1d1f; }
+        .row-sub-task { background-color: #ffffff; }
+        .row-sub-task td { border-bottom: 1px solid #e5e5ea; }
+        .row-sub-task:hover { background-color: #fcfcfc; }
+        
+        .total-row { background-color: #f5f5f7; font-weight: 600; color: #1d1d1f; font-size: 14px; }
+        
+        /* Nút bấm Apple Style */
+        .btn-add-main { background-color: #007aff; color: white; padding: 12px 20px; font-size: 14px; margin-top: 15px; width: 100%; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: 0.2s;}
+        .btn-add-main:hover { background-color: #005bb5; }
+        
+        .btn-add-sub { background-color: #007aff; color: white; margin-left: 10px; font-size: 12px; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s;}
+        .btn-add-sub:hover { background-color: #005bb5; }
+        
+        .btn-del { background-color: #ff3b30; color: white; padding: 6px 10px; font-size: 12px; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s;}
+        .btn-del:hover { background-color: #d70015; }
+    </style>
+<link rel='stylesheet' href='wizard-forms.css'>
+</head>
+<body>
+
+<div class="container">
+    <h2>Khoản 3. Nguyên vật liệu, năng lượng</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="4" width="2%" class="th-level-1">Số TT</th>
+                <th rowspan="4" width="12%" class="th-level-1">Nội dung</th>
+                <th rowspan="4" width="4%" class="th-level-1">Đơn vị đo</th>
+                <th rowspan="4" width="4%" class="th-level-1">Số lượng</th>
+                <th rowspan="4" width="5%" class="th-level-1">Đơn giá (VNĐ)</th>
+                <th rowspan="4" width="6%" class="th-level-1">Thành tiền (VNĐ)</th>
+                <th colspan="12" class="th-level-1">Nguồn vốn (VNĐ)</th>
+                <th rowspan="4" width="3%" class="th-level-1">Thao tác</th>
+            </tr>
+            <tr>
+                <th colspan="8" class="th-nsnn">Ngân sách nhà nước</th>
+                <th colspan="4" class="th-ngoai">Ngoài ngân sách nhà nước</th>
+            </tr>
+            <tr>
+                <th colspan="2" class="th-sub-nsnn">Tổng số</th>
+                <th colspan="2" class="th-sub-nsnn">Năm thứ nhất</th>
+                <th colspan="2" class="th-sub-nsnn">Năm thứ hai</th>
+                <th colspan="2" class="th-sub-nsnn">Năm thứ ba</th>
+                <th rowspan="2" class="th-sub-ngoai" width="5%">Tổng số</th>
+                <th rowspan="2" class="th-sub-ngoai" width="5%">Năm thứ nhất</th>
+                <th rowspan="2" class="th-sub-ngoai" width="5%">Năm thứ hai</th>
+                <th rowspan="2" class="th-sub-ngoai" width="5%">Năm thứ ba</th>
+            </tr>
+            <tr>
+                <th class="th-kp" width="5%">Kinh phí</th>
+                <th class="th-khoan" width="4%">Trong đó, khoán chi theo quy định</th>
+                <th class="th-kp" width="5%">Kinh phí</th>
+                <th class="th-khoan" width="4%">Trong đó, khoán chi theo quy định</th>
+                <th class="th-kp" width="5%">Kinh phí</th>
+                <th class="th-khoan" width="4%">Trong đó, khoán chi theo quy định</th>
+                <th class="th-kp" width="5%">Kinh phí</th>
+                <th class="th-khoan" width="4%">Trong đó, khoán chi theo quy định</th>
+            </tr>
+        </thead>
+        <tbody id="materialsTable" oninput="calculateMaterials()">
+            </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td colspan="5" style="text-align: right;">TỔNG CỘNG KHOẢN 3:</td>
+                <td id="g_tt" class="col-thanh-tien" style="color:#f1c40f;">0 đ</td>
+                
+                <td id="g_nsnn_tot_kp" class="col-tong-nsnn" style="color:#2ecc71;">0 đ</td>
+                <td id="g_nsnn_tot_kh" class="col-tong-khoan">0 đ</td>
+                <td id="g_nsnn_y1_kp">0 đ</td><td id="g_nsnn_y1_kh" style="font-style:italic">0 đ</td>
+                <td id="g_nsnn_y2_kp">0 đ</td><td id="g_nsnn_y2_kh" style="font-style:italic">0 đ</td>
+                <td id="g_nsnn_y3_kp">0 đ</td><td id="g_nsnn_y3_kh" style="font-style:italic">0 đ</td>
+                
+                <td id="g_ngoai_tot" class="col-tong-ngoai" style="color:#e67e22;">0 đ</td>
+                <td id="g_ngoai_y1">0 đ</td>
+                <td id="g_ngoai_y2">0 đ</td>
+                <td id="g_ngoai_y3">0 đ</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <button class="btn-add-main" onclick="addMainGroup('')">+ THÊM NỘI DUNG CHI MỚI (Nhóm vật tư)</button>
+</div>
+
+<script>
+    let groupCounter = 0;
+    const romanNumerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+
+    // Khởi tạo 3 nhóm mặc định ban đầu cho giống form, nhưng có thể xóa/sửa tên được
+    function initTable() {
+        addMainGroup("Nguyên, vật liệu chính");
+        addMainGroup("Dụng cụ, phụ tùng, vật rẻ mau hỏng");
+        addMainGroup("Năng lượng, nhiên liệu");
+    }
+
+    // Hàm đẻ ra một Nhóm bự (Main Group)
+    function addMainGroup(defaultName = "") {
+        groupCounter++;
+        const groupId = "G_" + Date.now() + "_" + groupCounter; // Tạo ID duy nhất
+        const tbody = document.getElementById('materialsTable');
+        
+        const tr = document.createElement('tr');
+        tr.className = 'row-special-header';
+        tr.setAttribute('data-id', groupId);
+        
+        tr.innerHTML = `
+            <td class="group-num" style="font-size: 15px; text-align: center;"></td>
+            <td colspan="2" style="text-align: left;">
+                <input type="text" value="${defaultName}" placeholder="Nhập tên Nhóm chi phí..." style="width: 65%; font-weight: bold; color: #16a085; text-transform: uppercase;">
+                <button class="btn-add-sub" onclick="addItem('${groupId}')">+ Thêm</button>
+            </td>
+            <td></td><td></td>
+            <td class="col-thanh-tien sum-tt">0 đ</td>
+            
+            <td class="col-tong-nsnn sum-nsnn-kp">0 đ</td>
+            <td class="col-tong-khoan sum-nsnn-kh">0 đ</td>
+            <td class="sum-n1-kp">0 đ</td><td class="sum-n1-kh" style="font-style:italic">0 đ</td>
+            <td class="sum-n2-kp">0 đ</td><td class="sum-n2-kh" style="font-style:italic">0 đ</td>
+            <td class="sum-n3-kp">0 đ</td><td class="sum-n3-kh" style="font-style:italic">0 đ</td>
+            
+            <td class="col-tong-ngoai sum-ngoai-tot">0 đ</td>
+            <td class="sum-ngoai-y1">0 đ</td>
+            <td class="sum-ngoai-y2">0 đ</td>
+            <td class="sum-ngoai-y3">0 đ</td>
+            <td><button class="btn-del" onclick="deleteGroup('${groupId}')" style="background-color: #7f8c8d;">Xóa Nhóm</button></td>
+        `;
+        tbody.appendChild(tr);
+        
+        updateGroupNumbers();
+        addItem(groupId); // Tự động đẻ 1 dòng con khi tạo nhóm
+    }
+
+    // Hàm đẻ ra 1 dòng vật tư chi tiết bên trong 1 nhóm
+    function addItem(groupId) {
+        const relatedRows = document.querySelectorAll(`tr[data-parent="${groupId}"]`);
+        let groupHeader = document.querySelector(`.row-special-header[data-id="${groupId}"]`);
+        let insertAfter = groupHeader;
+        
+        if(relatedRows.length > 0) {
+            insertAfter = relatedRows[relatedRows.length - 1]; 
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = 'row-sub-task';
+        tr.setAttribute('data-parent', groupId);
+        
+        tr.innerHTML = `
+            <td class="stt-col"></td>
+            <td><input type="text" placeholder="Tên vật tư..."></td>
+            <td><input type="text" placeholder="ĐVT" style="width: 50px; text-align: center;"></td>
+            <td><input type="number" class="qty-input" value="1" min="0" style="width: 50px;"></td>
+            <td><input type="number" class="price-input" value="0" min="0" step="1000"></td>
+            <td class="col-thanh-tien row-tt">0 đ</td>
+            
+            <td class="col-tong-nsnn row-nsnn-tot-kp">0 đ</td>
+            <td class="col-tong-khoan row-nsnn-tot-kh">0 đ</td>
+            <td><input type="number" class="n1-kp" value="0" min="0" step="10000"></td>
+            <td><input type="number" class="n1-kh khoan-input" value="0" min="0" step="10000"></td>
+            <td><input type="number" class="n2-kp" value="0" min="0" step="10000"></td>
+            <td><input type="number" class="n2-kh khoan-input" value="0" min="0" step="10000"></td>
+            <td><input type="number" class="n3-kp" value="0" min="0" step="10000"></td>
+            <td><input type="number" class="n3-kh khoan-input" value="0" min="0" step="10000"></td>
+            
+            <td class="col-tong-ngoai row-ngoai-tot">0 đ</td>
+            <td><input type="number" class="ngoai-1" value="0" min="0" step="10000"></td>
+            <td><input type="number" class="ngoai-2" value="0" min="0" step="10000"></td>
+            <td><input type="number" class="ngoai-3" value="0" min="0" step="10000"></td>
+            
+            <td><button class="btn-del" onclick="deleteRow(this, '${groupId}')">Xóa</button></td>
+        `;
+        
+        insertAfter.insertAdjacentElement('afterend', tr);
+        updateItemNumbers(groupId);
+        calculateMaterials();
+    }
+
+    // Xóa nguyên 1 cụm to
+    function deleteGroup(groupId) {
+        if(confirm("Xóa toàn bộ Nhóm này cùng các vật tư bên trong?")) {
+            document.querySelector(`.row-special-header[data-id="${groupId}"]`).remove();
+            document.querySelectorAll(`tr[data-parent="${groupId}"]`).forEach(row => row.remove());
+            updateGroupNumbers();
+            calculateMaterials();
+        }
+    }
+
+    // Xóa 1 dòng vật tư nhỏ
+    function deleteRow(btn, groupId) {
+        btn.closest('tr').remove();
+        updateItemNumbers(groupId);
+        calculateMaterials();
+    }
+
+    // Đánh số La mã (I, II, III...) cho Nhóm to
+    function updateGroupNumbers() {
+        document.querySelectorAll('.row-special-header').forEach((row, index) => {
+            const roman = romanNumerals[index] || (index + 1);
+            row.querySelector('.group-num').innerText = roman;
+            const groupId = row.getAttribute('data-id');
+            updateItemNumbers(groupId, roman);
+        });
+    }
+
+    // Đánh số Ả rập (I.1, I.2...) cho các dòng con
+    function updateItemNumbers(groupId, romanPrefix) {
+        // Lấy lại số La mã hiện tại của nhóm nếu không truyền vào
+        if(!romanPrefix) {
+            const groupRow = document.querySelector(`.row-special-header[data-id="${groupId}"]`);
+            if(groupRow) romanPrefix = groupRow.querySelector('.group-num').innerText;
+        }
+        
+        document.querySelectorAll(`tr[data-parent="${groupId}"]`).forEach((row, index) => {
+            row.querySelector('.stt-col').innerText = `${romanPrefix}.${index + 1}`;
+        });
+    }
+
+    // Siêu hàm tính toán 19 cột tương thích với việc thêm bớt nhóm tự động
+    function calculateMaterials() {
+        let G_tt = 0;
+        let G_nkp = 0, G_nkh = 0, G_n1k = 0, G_n1h = 0, G_n2k = 0, G_n2h = 0, G_n3k = 0, G_n3h = 0;
+        let G_og = 0, G_o1 = 0, G_o2 = 0, G_o3 = 0;
+
+        document.querySelectorAll('.row-special-header').forEach(groupRow => {
+            const groupId = groupRow.getAttribute('data-id');
+            let grp_tt = 0;
+            let grp_nkp = 0, grp_nkh = 0, grp_n1k = 0, grp_n1h = 0, grp_n2k = 0, grp_n2h = 0, grp_n3k = 0, grp_n3h = 0;
+            let grp_og = 0, grp_o1 = 0, grp_o2 = 0, grp_o3 = 0;
+
+            document.querySelectorAll(`tr[data-parent="${groupId}"]`).forEach(row => {
+                // 1. Tính Thành tiền
+                const qty = parseFloat(row.querySelector('.qty-input').value) || 0;
+                const price = parseFloat(row.querySelector('.price-input').value) || 0;
+                const tt = qty * price;
+                row.querySelector('.row-tt').innerText = Math.round(tt).toLocaleString('vi-VN') + " đ";
+                grp_tt += tt;
+
+                // 2. Tính dữ liệu NSNN
+                const n1k = parseFloat(row.querySelector('.n1-kp').value) || 0;
+                const n1h = parseFloat(row.querySelector('.n1-kh').value) || 0;
+                const n2k = parseFloat(row.querySelector('.n2-kp').value) || 0;
+                const n2h = parseFloat(row.querySelector('.n2-kh').value) || 0;
+                const n3k = parseFloat(row.querySelector('.n3-kp').value) || 0;
+                const n3h = parseFloat(row.querySelector('.n3-kh').value) || 0;
+                
+                const sum_kp = n1k + n2k + n3k;
+                const sum_kh = n1h + n2h + n3h;
+                
+                row.querySelector('.row-nsnn-tot-kp').innerText = Math.round(sum_kp).toLocaleString('vi-VN') + " đ";
+                row.querySelector('.row-nsnn-tot-kh').innerText = Math.round(sum_kh).toLocaleString('vi-VN') + " đ";
+                
+                grp_nkp += sum_kp; grp_nkh += sum_kh;
+                grp_n1k += n1k; grp_n1h += n1h; grp_n2k += n2k; grp_n2h += n2h; grp_n3k += n3k; grp_n3h += n3h;
+
+                // 3. Tính dữ liệu Ngoài NSNN
+                const o1 = parseFloat(row.querySelector('.ngoai-1').value) || 0;
+                const o2 = parseFloat(row.querySelector('.ngoai-2').value) || 0;
+                const o3 = parseFloat(row.querySelector('.ngoai-3').value) || 0;
+                const sum_o = o1 + o2 + o3;
+                
+                row.querySelector('.row-ngoai-tot').innerText = Math.round(sum_o).toLocaleString('vi-VN') + " đ";
+                
+                grp_og += sum_o; grp_o1 += o1; grp_o2 += o2; grp_o3 += o3;
+
+                // Lỗi 1: Báo đỏ nếu chia tiền các năm không khớp Thành Tiền
+                if(tt > 0 && (sum_kp + sum_o) !== tt) {
+                    row.querySelector('.row-tt').style.color = "red";
+                } else {
+                    row.querySelector('.row-tt').style.color = "#c0392b";
+                }
+                
+                // Lỗi 2: Cảnh báo đỏ nếu gõ Khoán chi > Kinh phí
+                [ {k: n1k, h: n1h, el: '.n1-kh'}, {k: n2k, h: n2h, el: '.n2-kh'}, {k: n3k, h: n3h, el: '.n3-kh'} ].forEach(y => {
+                    const inputKh = row.querySelector(y.el);
+                    if(y.h > y.k) {
+                        inputKh.style.backgroundColor = "#fadbd8"; inputKh.style.color = "red";
+                    } else {
+                        inputKh.style.backgroundColor = "#e8f8f5"; inputKh.style.color = "#117a65";
+                    }
+                });
+            });
+
+            // Ghi Tổng vào dòng Header của Nhóm
+            groupRow.querySelector('.sum-tt').innerText = Math.round(grp_tt).toLocaleString('vi-VN') + " đ";
+            groupRow.querySelector('.sum-nsnn-kp').innerText = Math.round(grp_nkp).toLocaleString('vi-VN') + " đ";
+            groupRow.querySelector('.sum-nsnn-kh').innerText = Math.round(grp_nkh).toLocaleString('vi-VN') + " đ";
+            groupRow.querySelector('.sum-n1-kp').innerText = Math.round(grp_n1k).toLocaleString('vi-VN') + " đ";
+            groupRow.querySelector('.sum-n1-kh').innerText = Math.round(grp_n1h).toLocaleString('vi-VN') + " đ";
+            groupRow.querySelector('.sum-n2-kp').innerText = Math.round(grp_n2k).toLocaleString('vi-VN') + " đ";
+            groupRow.querySelector('.sum-n2-kh').innerText = Math.round(grp_n2h).toLocaleString('vi-VN') + " đ";
+            groupRow.querySelector('.sum-n3-kp').innerText = Math.round(grp_n3k).toLocaleString('vi-VN') + " đ";
+            groupRow.querySelector('.sum-n3-kh').innerText = Math.round(grp_n3h).toLocaleString('vi-VN') + " đ";
+            
+            groupRow.querySelector('.sum-ngoai-tot').innerText = Math.round(grp_og).toLocaleString('vi-VN') + " đ";
+            groupRow.querySelector('.sum-ngoai-y1').innerText = Math.round(grp_o1).toLocaleString('vi-VN') + " đ";
+            groupRow.querySelector('.sum-ngoai-y2').innerText = Math.round(grp_o2).toLocaleString('vi-VN') + " đ";
+            groupRow.querySelector('.sum-ngoai-y3').innerText = Math.round(grp_o3).toLocaleString('vi-VN') + " đ";
+
+            // Cộng dồn vào Tổng toàn cục
+            G_tt += grp_tt; 
+            G_nkp += grp_nkp; G_nkh += grp_nkh; G_n1k += grp_n1k; G_n1h += grp_n1h; G_n2k += grp_n2k; G_n2h += grp_n2h; G_n3k += grp_n3k; G_n3h += grp_n3h;
+            G_og += grp_og; G_o1 += grp_o1; G_o2 += grp_o2; G_o3 += grp_o3;
+        });
+
+        // Ghi Tổng toàn cục
+        document.getElementById('g_tt').innerText = Math.round(G_tt).toLocaleString('vi-VN') + " đ";
+        document.getElementById('g_nsnn_tot_kp').innerText = Math.round(G_nkp).toLocaleString('vi-VN') + " đ";
+        document.getElementById('g_nsnn_tot_kh').innerText = Math.round(G_nkh).toLocaleString('vi-VN') + " đ";
+        document.getElementById('g_nsnn_y1_kp').innerText = Math.round(G_n1k).toLocaleString('vi-VN') + " đ";
+        document.getElementById('g_nsnn_y1_kh').innerText = Math.round(G_n1h).toLocaleString('vi-VN') + " đ";
+        document.getElementById('g_nsnn_y2_kp').innerText = Math.round(G_n2k).toLocaleString('vi-VN') + " đ";
+        document.getElementById('g_nsnn_y2_kh').innerText = Math.round(G_n2h).toLocaleString('vi-VN') + " đ";
+        document.getElementById('g_nsnn_y3_kp').innerText = Math.round(G_n3k).toLocaleString('vi-VN') + " đ";
+        document.getElementById('g_nsnn_y3_kh').innerText = Math.round(G_n3h).toLocaleString('vi-VN') + " đ";
+        
+        document.getElementById('g_ngoai_tot').innerText = Math.round(G_og).toLocaleString('vi-VN') + " đ";
+        document.getElementById('g_ngoai_y1').innerText = Math.round(G_o1).toLocaleString('vi-VN') + " đ";
+        document.getElementById('g_ngoai_y2').innerText = Math.round(G_o2).toLocaleString('vi-VN') + " đ";
+        document.getElementById('g_ngoai_y3').innerText = Math.round(G_o3).toLocaleString('vi-VN') + " đ";
+    }
+
+    // Tự động sinh 3 nhóm mặc định khi mở lên
+    window.onload = initTable;
+</script>
+
+</body>
+</html>

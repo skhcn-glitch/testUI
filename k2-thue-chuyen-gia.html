@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dự Toán - Khoản 2: Thuê chuyên gia</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f7; padding: 20px; color: #1d1d1f; margin: 0;}
+        .container { display: inline-block; min-width: 100%; box-sizing: border-box; margin: auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); overflow: visible; }
+        h2 { text-align: center; color: #1d1d1f; border-bottom: 1px solid #e5e5ea; padding-bottom: 15px; text-transform: uppercase; font-weight: 600;}
+        
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 20px; font-size: 14px; box-shadow: 0 0 0 1px #e5e5ea; border-radius: 8px; overflow: hidden;}
+        th, td { border: 1px solid #e5e5ea; padding: 10px; text-align: center; vertical-align: middle; }
+        
+        /* CSS cho phần Header Bảng */
+        th { background-color: #f5f5f7; color: #1d1d1f; padding: 12px; font-weight: 600;}
+        .th-sub { background-color: #f5f5f7; border-bottom: 1px solid #d1d1d6; font-size: 13px;}
+        
+        /* Input fields */
+        td input[type="text"] { width: 95%; padding: 8px; border: 1px solid #d1d1d6; border-radius: 6px; box-sizing: border-box; transition: 0.2s;}
+        td input[type="number"] { width: 80px; padding: 8px; text-align: right; border: 1px solid #d1d1d6; border-radius: 6px; transition: 0.2s;}
+        td input:focus { outline: none; border-color: #007aff; box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); }
+        .ratio-input { width: 45px !important; padding: 4px !important; font-size: 12px; text-align: center; border: 1px solid #34c759 !important; color: #34c759; font-weight: 600; border-radius: 6px;}
+        
+        /* Cấu trúc dòng */
+        .row-special-header { background-color: #f5f5f7; font-weight: 600; border-top: 1px solid #e5e5ea;}
+        .row-special-header td { text-align: left; }
+        
+        .row-sub-task { background-color: #ffffff; }
+        .row-sub-task td { border-bottom: 1px solid #e5e5ea; }
+        
+        .total-row { background-color: #f5f5f7; font-weight: 600; color: #1d1d1f; font-size: 14px; }
+        
+        /* Màu sắc phân biệt cột tiền */
+        .col-total { font-weight: 600; color: #ff3b30; text-align: right; }
+        .col-nsnn { font-weight: 600; color: #34c759; text-align: right; }
+        .col-ngoai { font-weight: 600; color: #ff9f0a; text-align: right; }
+
+        /* Nút bấm Apple Style */
+        .btn-add-sub { background-color: #007aff; color: white; margin-left: 15px; font-size: 12px; padding: 6px 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: 0.2s;}
+        .btn-add-sub:hover { background-color: #005bb5; }
+        
+        .btn-del { background-color: #ff3b30; color: white; padding: 6px 10px; font-size: 12px; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s;}
+        .btn-del:hover { background-color: #d70015; }
+    </style>
+<link rel='stylesheet' href='wizard-forms.css'>
+</head>
+<body>
+
+<div class="container">
+    <h2>Khoản 2: Thuê chuyên gia</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="2" width="4%">Số TT</th>
+                <th rowspan="2" width="16%">Họ và tên, học hàm, học vị</th>
+                <th rowspan="2" width="8%">Quốc tịch</th>
+                <th rowspan="2" width="12%">Thuộc tổ chức</th>
+                <th rowspan="2" width="16%">Nội dung thực hiện</th>
+                <th rowspan="2" width="7%">Thời gian (tháng)</th>
+                <th rowspan="2" width="10%">Mức thù lao (VNĐ/tháng)</th>
+                <th colspan="3" width="22%">Kinh phí (VNĐ)</th>
+                <th rowspan="2" width="5%">Thao tác</th>
+            </tr>
+            <tr>
+                <th width="8%" class="th-sub">Tổng</th>
+                <th width="7%" class="th-sub">Ngân sách NN <br><span style="font-weight: normal; font-size: 11px;">(Nhập %)</span></th>
+                <th width="7%" class="th-sub">Ngoài NSNN</th>
+            </tr>
+        </thead>
+        <tbody id="expertTable" oninput="calculateExpertBudget()">
+            
+            <tr class="row-special-header" id="group_I" data-id="I">
+                <td style="text-align: center; font-size: 16px;">I</td>
+                <td colspan="6" style="color: #c0392b; text-transform: uppercase;">
+                    Chuyên gia trong nước
+                    <button class="btn-add-sub" onclick="addExpert('I')">+ Thêm chuyên gia</button>
+                </td>
+                <td class="col-total" id="sum_total_I">0 đ</td>
+                <td class="col-nsnn" id="sum_nsnn_I">0 đ</td>
+                <td class="col-ngoai" id="sum_ngoai_I">0 đ</td>
+                <td></td>
+            </tr>
+            <tr class="row-special-header" id="group_II" data-id="II">
+                <td style="text-align: center; font-size: 16px; border-top: 2px solid #c0392b;">II</td>
+                <td colspan="6" style="color: #c0392b; text-transform: uppercase; border-top: 2px solid #c0392b;">
+                    Chuyên gia nước ngoài
+                    <button class="btn-add-sub" onclick="addExpert('II')">+ Thêm chuyên gia</button>
+                </td>
+                <td class="col-total" id="sum_total_II" style="border-top: 2px solid #c0392b;">0 đ</td>
+                <td class="col-nsnn" id="sum_nsnn_II" style="border-top: 2px solid #c0392b;">0 đ</td>
+                <td class="col-ngoai" id="sum_ngoai_II" style="border-top: 2px solid #c0392b;">0 đ</td>
+                <td style="border-top: 2px solid #c0392b;"></td>
+            </tr>
+            </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td colspan="7" style="text-align: right;">TỔNG CỘNG KHOẢN 2:</td>
+                <td id="grandTotal" class="col-total" style="color: #f1c40f;">0 đ</td>
+                <td id="grandNsnn" class="col-nsnn" style="color: #2ecc71;">0 đ</td>
+                <td id="grandNgoai" class="col-ngoai" style="color: #e67e22;">0 đ</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    let expertCounterI = 0;
+    let expertCounterII = 0;
+
+    // Hàm thêm dòng chuyên gia mới
+    function addExpert(groupId) {
+        let subId = 0;
+        if (groupId === 'I') {
+            expertCounterI++;
+            subId = expertCounterI;
+        } else {
+            expertCounterII++;
+            subId = expertCounterII;
+        }
+        
+        // Tìm vị trí chèn (chèn xuống dưới cùng của nhóm tương ứng)
+        const relatedRows = document.querySelectorAll(`tr[data-parent="${groupId}"]`);
+        let insertAfter = document.getElementById(`group_${groupId}`);
+        if(relatedRows.length > 0) {
+            insertAfter = relatedRows[relatedRows.length - 1]; 
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = 'row-sub-task';
+        tr.setAttribute('data-parent', groupId);
+        
+        tr.innerHTML = `
+            <td class="sub-number"></td>
+            <td><input type="text" placeholder="Họ tên, Học vị..."></td>
+            <td><input type="text" value="${groupId === 'I' ? 'Việt Nam' : ''}" style="text-align: center;"></td>
+            <td><input type="text" placeholder="Đơn vị công tác..."></td>
+            <td><input type="text" placeholder="Công việc đảm nhận..."></td>
+            <td><input type="number" class="time-input" value="1" min="0" step="0.1" style="width: 60px;"></td>
+            <td><input type="number" class="rate-input" value="0" min="0" step="500000" style="width: 100px;"></td>
+            
+            <td class="col-total row-total">0 đ</td>
+            <td class="col-nsnn">
+                <input type="number" class="ratio-input" value="100" min="0" max="100">%
+                <div class="row-nsnn" style="margin-top: 4px;">0 đ</div>
+            </td>
+            <td class="col-ngoai row-ngoai">0 đ</td>
+            
+            <td><button class="btn-del" onclick="deleteExpert(this, '${groupId}')">Xóa</button></td>
+        `;
+
+        insertAfter.insertAdjacentElement('afterend', tr);
+        updateNumbers(groupId);
+        calculateExpertBudget();
+    }
+
+    // Hàm xóa dòng
+    function deleteExpert(btn, groupId) {
+        btn.closest('tr').remove();
+        updateNumbers(groupId);
+        calculateExpertBudget();
+    }
+
+    // Hàm đánh lại số thứ tự (1, 2, 3...) cho từng nhóm
+    function updateNumbers(groupId) {
+        document.querySelectorAll(`tr[data-parent="${groupId}"]`).forEach((row, index) => {
+            row.querySelector('.sub-number').innerText = index + 1;
+        });
+    }
+
+    // Hàm tính toán tiền
+    function calculateExpertBudget() {
+        let grandTotal = 0;
+        let grandNsnn = 0;
+        let grandNgoai = 0;
+
+        ['I', 'II'].forEach(groupId => {
+            let groupTotal = 0;
+            let groupNsnn = 0;
+            let groupNgoai = 0;
+            
+            document.querySelectorAll(`tr[data-parent="${groupId}"]`).forEach(subRow => {
+                const time = parseFloat(subRow.querySelector('.time-input').value) || 0;
+                const rate = parseFloat(subRow.querySelector('.rate-input').value) || 0;
+                const ratio = (parseFloat(subRow.querySelector('.ratio-input').value) || 0) / 100;
+                
+                // Công thức: Tổng = Thời gian * Mức thù lao
+                const rowTotal = time * rate;
+                // Chẻ tiền theo %
+                const rowNsnn = rowTotal * ratio;
+                const rowNgoai = rowTotal - rowNsnn;
+                
+                subRow.querySelector('.row-total').innerText = Math.round(rowTotal).toLocaleString('vi-VN') + " đ";
+                subRow.querySelector('.row-nsnn').innerText = Math.round(rowNsnn).toLocaleString('vi-VN') + " đ";
+                subRow.querySelector('.row-ngoai').innerText = Math.round(rowNgoai).toLocaleString('vi-VN') + " đ";
+                
+                groupTotal += rowTotal;
+                groupNsnn += rowNsnn;
+                groupNgoai += rowNgoai;
+            });
+
+            // Cập nhật tổng cho từng Nhóm I và II
+            document.getElementById(`sum_total_${groupId}`).innerText = Math.round(groupTotal).toLocaleString('vi-VN') + " đ";
+            document.getElementById(`sum_nsnn_${groupId}`).innerText = Math.round(groupNsnn).toLocaleString('vi-VN') + " đ";
+            document.getElementById(`sum_ngoai_${groupId}`).innerText = Math.round(groupNgoai).toLocaleString('vi-VN') + " đ";
+            
+            // Cộng dồn vào Tổng lớn
+            grandTotal += groupTotal;
+            grandNsnn += groupNsnn;
+            grandNgoai += groupNgoai;
+        });
+
+        // Cập nhật dòng Tổng cộng cuối cùng
+        document.getElementById('grandTotal').innerText = Math.round(grandTotal).toLocaleString('vi-VN') + " đ";
+        document.getElementById('grandNsnn').innerText = Math.round(grandNsnn).toLocaleString('vi-VN') + " đ";
+        document.getElementById('grandNgoai').innerText = Math.round(grandNgoai).toLocaleString('vi-VN') + " đ";
+    }
+
+    // Tự động thêm 1 dòng trắng vào Nhóm I khi tải trang cho đỡ trống
+    window.onload = function() {
+        addExpert('I'); 
+    };
+</script>
+
+</body>
+</html>

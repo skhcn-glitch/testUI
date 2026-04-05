@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DỰ TOÁN CHI TIẾT THÙ LAO THAM GIA THỰC HIỆN ĐỀ TÀI</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f7; padding: 20px; color: #1d1d1f; margin: 0;}
+        .container { display: inline-block; min-width: 100%; box-sizing: border-box; margin: auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); overflow: visible; }
+        h2 { text-align: center; color: #1d1d1f; border-bottom: 1px solid #e5e5ea; padding-bottom: 15px; text-transform: uppercase; font-weight: 600;}
+        h3 { color: #1d1d1f; border-left: 3px solid #007aff; padding-left: 10px; margin-top: 40px; text-transform: uppercase; font-size: 16px; font-weight: 600;}
+        
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; font-size: 13px; min-width: 1900px; box-shadow: 0 0 0 1px #e5e5ea; border-radius: 8px; overflow: hidden;}
+        #summaryTable { min-width: 1000px; width: 80%; margin: auto; box-shadow: 0 0 0 1px #e5e5ea; }
+        th, td { border: 1px solid #e5e5ea; padding: 10px; text-align: center; vertical-align: middle; }
+        
+        /* Màu sắc Header Apple Style */
+        th { color: #1d1d1f; padding: 12px 10px; font-weight: 600;}
+        .th-level-1 { background-color: #f5f5f7; } 
+        .th-nsnn { background-color: #e5f9e7; } 
+        .th-ngoai { background-color: #fff1e0; } 
+        .th-sub-nsnn { background-color: #f0fdf4; font-size: 12px; color: #1d1d1f;}
+        .th-sub-ngoai { background-color: #fff7ed; font-size: 12px; color: #1d1d1f;}
+        .th-summary { background-color: #f5f5f7; border-bottom: 1px solid #d1d1d6; }
+        
+        /* Input fields */
+        td input[type="text"] { width: 95%; padding: 8px; border: 1px solid #d1d1d6; border-radius: 6px; box-sizing: border-box; font-size: 13px; transition: 0.2s;}
+        td input[type="number"] { width: 70px; padding: 8px; text-align: right; border: 1px solid #d1d1d6; border-radius: 6px; font-size: 13px; transition: 0.2s;}
+        td select { width: 95%; padding: 8px; border: 1px solid #d1d1d6; border-radius: 6px; font-size: 13px; cursor: pointer; transition: 0.2s;}
+        td input:focus, td select:focus { outline: none; border-color: #007aff; box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); }
+        .hs-input, .people-input, .days-input, .month-input { width: 60px !important; text-align: center !important;}
+        .money-input { width: 90px !important; text-align: right !important; font-weight: 600; color: #1d1d1f;}
+        
+        /* HIỆU ỨNG KHÓA CỨNG (READONLY) */
+        .locked-input { background-color: #f5f5f7 !important; color: #86868b !important; cursor: not-allowed; border: 1px solid #e5e5ea !important;}
+        
+        /* Cấu trúc dòng */
+        .row-group { background-color: #f5f5f7; font-weight: 600; }
+        .row-group td { color: #1d1d1f; text-transform: uppercase;}
+        .row-main-task { background-color: #ffffff; font-weight: 600; }
+        .row-sub-task { background-color: #fdfdfd; font-style: normal; color: #48484a;}
+        .row-person { background-color: #ffffff; }
+        
+        .is-management { background-color: #fbfbfd !important;} 
+        .note-cell { font-style: italic; color: #86868b; text-transform: none; text-align: left; background-color: #ffffff;}
+        
+        .col-thanh-tien { font-weight: 600; color: #ff3b30; }
+        .col-tong-nsnn { font-weight: 600; color: #34c759; }
+        .col-tong-ngoai { font-weight: 600; color: #ff9f0a; }
+        
+        .total-row { background-color: #f5f5f7; font-weight: 600; color: #1d1d1f; font-size: 14px; }
+        .summary-total { background-color: #f5f5f7; font-weight: 600; color: #1d1d1f; font-size: 14px; }
+        
+        /* CHỈ SỬA Ở ĐÂY: Xóa margin-top, đổi thành margin-left để nút không bị rớt dòng */
+        .btn-add-main { background-color: #007aff; color: white; padding: 8px 12px; font-size: 13px; margin-left: 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: 0.2s;}
+        .btn-add-main:hover { background-color: #005bb5; }
+        .btn-add-sub { background-color: #007aff; color: white; margin-left: 10px; font-size: 12px; padding: 6px 10px; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s;}
+        .btn-add-sub:hover { background-color: #005bb5; }
+        .btn-del { background-color: #ff3b30; color: white; padding: 6px 10px; font-size: 12px; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s;}
+        .btn-del:hover { background-color: #d70015; }
+    </style>
+<link rel='stylesheet' href='wizard-forms.css'>
+</head>
+<body>
+
+<div class="container">
+    <h2>DỰ TOÁN CHI TIẾT THÙ LAO THAM GIA THỰC HIỆN ĐỀ TÀI</h2>
+    <p style="text-align: center; color: #7f8c8d; font-style: italic;">Các ô màu xám là định mức chuẩn của Nhà nước hoặc ô tự tính, không thể chỉnh sửa.</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="3" width="3%" class="th-level-1">Số TT</th>
+                <th rowspan="3" width="18%" class="th-level-1">Nội dung công việc</th>
+                <th rowspan="3" width="5%" class="th-level-1">Hệ số LĐKH</th>
+                <th rowspan="3" width="5%" class="th-level-1">Số người</th>
+                <th rowspan="3" width="7%" class="th-level-1">ĐMCN (VNĐ/Tháng)</th>
+                <th rowspan="3" width="5%" class="th-level-1" style="color:#007aff;">Số ngày thực hiện</th>
+                <th rowspan="3" width="5%" class="th-level-1">Số tháng</th>
+                <th rowspan="3" width="8%" class="th-level-1">Tổng thù lao (VNĐ)</th>
+                <th colspan="8" class="th-level-1">Nguồn vốn (VNĐ)</th>
+                <th rowspan="3" width="3%" class="th-level-1">Thao tác</th>
+            </tr>
+            <tr>
+                <th colspan="4" class="th-nsnn">Ngân sách nhà nước</th>
+                <th colspan="4" class="th-ngoai">Ngoài ngân sách nhà nước</th>
+            </tr>
+            <tr>
+                <th width="6%" class="th-sub-nsnn">Tổng số</th>
+                <th width="6%" class="th-sub-nsnn">Năm thứ nhất</th>
+                <th width="6%" class="th-sub-nsnn">Năm thứ hai</th>
+                <th width="6%" class="th-sub-nsnn">Năm thứ ba</th>
+                <th width="6%" class="th-sub-ngoai">Tổng số</th>
+                <th width="6%" class="th-sub-ngoai">Năm thứ nhất</th>
+                <th width="6%" class="th-sub-ngoai">Năm thứ hai</th>
+                <th width="6%" class="th-sub-ngoai">Năm thứ ba</th>
+            </tr>
+        </thead>
+        <tbody id="laborTable" oninput="calculateLabor()">
+            <tr class="row-group">
+                <td>I</td>
+                <td style="text-align: left;">Xây dựng thuyết minh đề tài</td>
+                <td colspan="6" class="note-cell">Nội dung công việc này chủ nhiệm và thư ký khoa học của đề tài thực hiện, đã được tính trong thù lao của CN và TKKH, không tính thù lao riêng</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+            <tr class="row-person calc-row is-management" data-role="cn">
+                <td></td>
+                <td style="text-align: left;">- Thù lao của chủ nhiệm đề tài:</td>
+                <td><input type="text" class="hs-input locked-input" value="0.8" readonly></td>
+                <td><input type="text" class="people-input locked-input" value="1" readonly></td>
+                <td><input type="text" class="dmcn-input money-input locked-input" value="32.000.000" readonly></td>
+                <td><input type="number" class="days-input locked-input" value="" placeholder="-" readonly></td>
+                <td><input type="number" class="month-input" value="" placeholder="Nhập..." min="0" step="0.1"></td>
+                <td class="col-thanh-tien row-tt" title="Đã nhân 20%">0 đ</td>
+                <td class="col-tong-nsnn row-nsnn-tot">0 đ</td>
+                <td><input type="text" class="n1 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+                <td><input type="text" class="n2 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+                <td><input type="text" class="n3 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+                <td class="col-tong-ngoai row-ngoai-tot">0 đ</td>
+                <td><input type="text" class="o1 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+                <td><input type="text" class="o2 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+                <td><input type="text" class="o3 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+                <td></td>
+            </tr>
+            <tr class="row-person calc-row is-management" data-role="tk">
+                <td></td>
+                <td style="text-align: left;">- Thù lao của thư ký khoa học:</td>
+                <td><input type="text" class="hs-input locked-input" value="0.24" readonly></td>
+                <td><input type="text" class="people-input locked-input" value="1" readonly></td>
+                <td><input type="text" class="dmcn-input money-input locked-input" value="32.000.000" readonly></td>
+                <td><input type="number" class="days-input locked-input" value="" placeholder="-" readonly></td>
+                <td><input type="number" class="month-input" value="" placeholder="Nhập..." min="0" step="0.1"></td>
+                <td class="col-thanh-tien row-tt" title="Đã nhân 20%">0 đ</td>
+                <td class="col-tong-nsnn row-nsnn-tot">0 đ</td>
+                <td><input type="text" class="n1 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+                <td><input type="text" class="n2 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+                <td><input type="text" class="n3 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+                <td class="col-tong-ngoai row-ngoai-tot">0 đ</td>
+                <td><input type="text" class="o1 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+                <td><input type="text" class="o2 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+                <td><input type="text" class="o3 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+                <td></td>
+            </tr>
+
+            <tr class="row-group" id="group_II">
+                <td>II</td>
+                <td style="text-align: left; white-space: nowrap;">
+                    Nội dung nghiên cứu
+                    <button class="btn-add-main" onclick="addMainTask()">+ Thêm Nội dung chính</button>
+                </td>
+                <td></td><td></td><td></td><td></td><td></td>
+                <td class="col-thanh-tien sum-tt-II">0 đ</td>
+                <td class="col-tong-nsnn sum-nsnn-II">0 đ</td><td></td><td></td><td></td>
+                <td class="col-tong-ngoai sum-ngoai-II">0 đ</td><td></td><td></td><td></td>
+                <td></td>
+            </tr>
+
+            <tr class="row-group" id="group_III">
+                <td>III</td>
+                <td style="text-align: left;">Xây dựng báo cáo tổng kết</td>
+                <td colspan="6" class="note-cell">Nội dung công việc này chủ nhiệm và thư ký khoa học của đề tài thực hiện, đã được tính trong thù lao của CN và TKKH, không tính thù lao riêng</td>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+
+        </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td colspan="7" style="text-align: right;">TỔNG CỘNG BẢNG 1:</td>
+                <td id="grandTotal" style="color: #ff3b30; text-align: right;">0 đ</td>
+                <td id="grandNsnn" class="col-tong-nsnn" style="text-align: right;">0 đ</td>
+                <td id="gN1" style="text-align: right;">0 đ</td><td id="gN2" style="text-align: right;">0 đ</td><td id="gN3" style="text-align: right;">0 đ</td>
+                <td id="grandNgoai" class="col-tong-ngoai" style="text-align: right;">0 đ</td>
+                <td id="gO1" style="text-align: right;">0 đ</td><td id="gO2" style="text-align: right;">0 đ</td><td id="gO3" style="text-align: right;">0 đ</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <h3>BẢNG TỔNG HỢP KINH PHÍ THÙ LAO (TỰ ĐỘNG)</h3>
+    <table id="summaryTable">
+        <thead>
+            <tr>
+                <th width="5%" class="th-summary">STT</th>
+                <th width="35%" class="th-summary">Chức danh thực hiện</th>
+                <th width="15%" class="th-summary">Tổng số tháng quy đổi</th>
+                <th width="15%" class="th-summary">Tổng kinh phí (VNĐ)</th>
+                <th width="15%" class="th-nsnn">Ngân sách NN (VNĐ)</th>
+                <th width="15%" class="th-ngoai">Ngoài NSNN (VNĐ)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td><td style="text-align: left; font-weight: 600;">Chủ nhiệm đề tài</td>
+                <td id="sum_month_cn" style="font-weight: 600;">0</td>
+                <td id="sum_tt_cn" class="col-thanh-tien">0 đ</td>
+                <td id="sum_nsnn_cn" class="col-tong-nsnn">0 đ</td>
+                <td id="sum_ngoai_cn" class="col-tong-ngoai">0 đ</td>
+            </tr>
+            <tr>
+                <td>2</td><td style="text-align: left; font-weight: 600;">Thư ký khoa học</td>
+                <td id="sum_month_tk" style="font-weight: 600;">0</td>
+                <td id="sum_tt_tk" class="col-thanh-tien">0 đ</td>
+                <td id="sum_nsnn_tk" class="col-tong-nsnn">0 đ</td>
+                <td id="sum_ngoai_tk" class="col-tong-ngoai">0 đ</td>
+            </tr>
+            <tr>
+                <td>3</td><td style="text-align: left;">Thành viên chính</td>
+                <td id="sum_month_tvc">0</td>
+                <td id="sum_tt_tvc">0 đ</td>
+                <td id="sum_nsnn_tvc">0 đ</td>
+                <td id="sum_ngoai_tvc">0 đ</td>
+            </tr>
+            <tr>
+                <td>4</td><td style="text-align: left;">Thành viên</td>
+                <td id="sum_month_tv">0</td>
+                <td id="sum_tt_tv">0 đ</td>
+                <td id="sum_nsnn_tv">0 đ</td>
+                <td id="sum_ngoai_tv">0 đ</td>
+            </tr>
+            <tr>
+                <td>5</td><td style="text-align: left;">Kỹ thuật viên, nhân viên hỗ trợ</td>
+                <td id="sum_month_ktv">0</td>
+                <td id="sum_tt_ktv">0 đ</td>
+                <td id="sum_nsnn_ktv">0 đ</td>
+                <td id="sum_ngoai_ktv">0 đ</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr class="summary-total">
+                <td colspan="2" style="text-align: right;">TỔNG CỘNG THÙ LAO:</td>
+                <td id="sum_month_all">0</td>
+                <td id="sum_tt_all">0 đ</td>
+                <td id="sum_nsnn_all">0 đ</td>
+                <td id="sum_ngoai_all">0 đ</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    let mainTaskCounter = 0;
+    let subTaskCounter = 0;
+
+    function formatCurrency(input) {
+        let val = input.value.replace(/\./g, ''); 
+        if (!isNaN(val) && val !== '') {
+            input.value = Number(val).toLocaleString('vi-VN');
+        } else {
+            input.value = '';
+        }
+        calculateLabor(); 
+    }
+
+    function parseVND(str) {
+        if(!str) return 0;
+        return parseFloat(str.toString().replace(/\./g, '')) || 0;
+    }
+
+    // XỬ LÝ DROPDOWN THÔNG MINH
+    function applyRole(selectElem) {
+        const row = selectElem.closest('tr');
+        const hsInput = row.querySelector('.hs-input');
+        const peopleInput = row.querySelector('.people-input');
+        
+        if (selectElem.value === 'tvc') {
+            hsInput.value = "0.64";
+            peopleInput.value = "1";
+            peopleInput.readOnly = true;
+            peopleInput.classList.add('locked-input');
+        } else if (selectElem.value === 'tv') {
+            hsInput.value = "0.32";
+            peopleInput.value = "";
+            peopleInput.readOnly = false;
+            peopleInput.classList.remove('locked-input');
+        } else if (selectElem.value === 'ktv') {
+            hsInput.value = "0.16";
+            peopleInput.value = "";
+            peopleInput.readOnly = false;
+            peopleInput.classList.remove('locked-input');
+        } else {
+            hsInput.value = "0";
+            peopleInput.value = "";
+            peopleInput.readOnly = false;
+            peopleInput.classList.remove('locked-input');
+        }
+        calculateLabor();
+    }
+
+    function addMainTask() {
+        mainTaskCounter++;
+        const mainId = 'M' + mainTaskCounter;
+        const tbody = document.getElementById('laborTable');
+        const insertBeforeRow = document.getElementById('group_III'); 
+        
+        const tr = document.createElement('tr');
+        tr.className = 'row-main-task';
+        tr.id = `main_${mainId}`;
+        tr.setAttribute('data-main-id', mainId);
+        
+        tr.innerHTML = `
+            <td class="stt-main">II.${mainTaskCounter}</td>
+            <td style="text-align: left;">
+                <input type="text" placeholder="Nhập tên Nội dung nghiên cứu chính..." style="width: 65%;">
+                <button class="btn-add-sub" onclick="addSubTask('${mainId}')">+ Thêm CV</button>
+            </td>
+            <td></td><td></td><td></td><td></td><td></td>
+            <td class="col-thanh-tien sum-tt-main" style="text-align:right;">0 đ</td>
+            <td class="col-tong-nsnn sum-nsnn-main" style="text-align:right;">0 đ</td><td></td><td></td><td></td>
+            <td class="col-tong-ngoai sum-ngoai-main" style="text-align:right;">0 đ</td><td></td><td></td><td></td>
+            <td><button class="btn-del" onclick="deleteBlock('${mainId}', 'main')">Xóa</button></td>
+        `;
+        tbody.insertBefore(tr, insertBeforeRow);
+        addSubTask(mainId); 
+    }
+
+    function addSubTask(mainId) {
+        subTaskCounter++;
+        const subId = 'S' + subTaskCounter;
+        
+        const relatedSubRows = document.querySelectorAll(`tr[data-parent-main="${mainId}"]`);
+        let insertAfter = document.getElementById(`main_${mainId}`);
+        if(relatedSubRows.length > 0) insertAfter = relatedSubRows[relatedSubRows.length - 1];
+        
+        const tr = document.createElement('tr');
+        tr.className = 'row-sub-task';
+        tr.id = `sub_${subId}`;
+        tr.setAttribute('data-parent-main', mainId);
+        tr.setAttribute('data-sub-id', subId);
+        
+        tr.innerHTML = `
+            <td class="stt-sub"></td>
+            <td style="text-align: left; padding-left: 20px;">
+                <input type="text" placeholder="Tên công việc cụ thể..." style="width: 65%;">
+                <button class="btn-add-sub" style="background-color:#34c759;" onclick="addPerson('${mainId}', '${subId}')">+ Người</button>
+            </td>
+            <td></td><td></td><td></td><td></td><td></td>
+            <td class="col-thanh-tien sum-tt-sub" style="color:#ff9f0a; text-align:right;">0 đ</td>
+            <td class="col-tong-nsnn sum-nsnn-sub" style="text-align:right;">0 đ</td><td></td><td></td><td></td>
+            <td class="col-tong-ngoai sum-ngoai-sub" style="text-align:right;">0 đ</td><td></td><td></td><td></td>
+            <td><button class="btn-del" onclick="deleteBlock('${subId}', 'sub')">Xóa</button></td>
+        `;
+        insertAfter.insertAdjacentElement('afterend', tr);
+        
+        updateNumbers();
+        addPerson(mainId, subId); 
+    }
+
+    function addPerson(mainId, subId) {
+        const relatedPersons = document.querySelectorAll(`tr[data-parent-sub="${subId}"]`);
+        let insertAfter = document.getElementById(`sub_${subId}`);
+        if(relatedPersons.length > 0) insertAfter = relatedPersons[relatedPersons.length - 1];
+
+        const tr = document.createElement('tr');
+        tr.className = 'row-person calc-row'; 
+        tr.setAttribute('data-parent-main', mainId);
+        tr.setAttribute('data-parent-sub', subId);
+        
+        tr.innerHTML = `
+            <td>-</td>
+            <td style="text-align: left; padding-left: 40px;">
+                <select class="role-select" onchange="applyRole(this)">
+                    <option value="">-- Chọn chức danh --</option>
+                    <option value="tvc">Thành viên chính</option>
+                    <option value="tv">Thành viên</option>
+                    <option value="ktv">Kỹ thuật viên, nhân viên hỗ trợ</option>
+                </select>
+            </td>
+            <td><input type="text" class="hs-input locked-input" value="0" readonly></td>
+            <td><input type="number" class="people-input" value="" min="1"></td>
+            <td><input type="text" class="dmcn-input money-input locked-input" value="32.000.000" readonly></td>
+            <td><input type="number" class="days-input" value="" min="0" step="1" placeholder="Ngày..."></td>
+            <td><input type="number" class="month-input locked-input" value="" readonly placeholder="Tự tính"></td>
+            <td class="col-thanh-tien row-tt" style="text-align:right;">0 đ</td>
+            
+            <td class="col-tong-nsnn row-nsnn-tot" style="text-align:right;">0 đ</td>
+            <td><input type="text" class="n1 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+            <td><input type="text" class="n2 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+            <td><input type="text" class="n3 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+            
+            <td class="col-tong-ngoai row-ngoai-tot" style="text-align:right;">0 đ</td>
+            <td><input type="text" class="o1 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+            <td><input type="text" class="o2 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+            <td><input type="text" class="o3 money-input" value="0" onkeyup="formatCurrency(this)"></td>
+            
+            <td><button class="btn-del" style="background-color:#86868b;" onclick="deleteRow(this)">Xóa</button></td>
+        `;
+        insertAfter.insertAdjacentElement('afterend', tr);
+        calculateLabor();
+    }
+
+    function deleteRow(btn) { btn.closest('tr').remove(); calculateLabor(); }
+
+    function deleteBlock(id, type) {
+        if(type === 'main') {
+            document.getElementById(`main_${id}`).remove();
+            document.querySelectorAll(`tr[data-parent-main="${id}"]`).forEach(row => row.remove());
+        } else if (type === 'sub') {
+            document.getElementById(`sub_${id}`).remove();
+            document.querySelectorAll(`tr[data-parent-sub="${id}"]`).forEach(row => row.remove());
+        }
+        updateNumbers();
+        calculateLabor();
+    }
+
+    function updateNumbers() {
+        let mainIdx = 1;
+        document.querySelectorAll('.row-main-task').forEach(mainRow => {
+            mainRow.querySelector('.stt-main').innerText = `II.${mainIdx}`;
+            const mainId = mainRow.getAttribute('data-main-id');
+            let subIdx = 1;
+            document.querySelectorAll(`.row-sub-task[data-parent-main="${mainId}"]`).forEach(subRow => {
+                subRow.querySelector('.stt-sub').innerText = `II.${mainIdx}.${subIdx}`;
+                subIdx++;
+            });
+            mainIdx++;
+        });
+    }
+
+    // SIÊU HÀM TÍNH TOÁN
+    function calculateLabor() {
+        let G_tt = 0, G_nsnn = 0, G_n1 = 0, G_n2 = 0, G_n3 = 0, G_ngoai = 0, G_o1 = 0, G_o2 = 0, G_o3 = 0;
+
+        let sumData = {
+            'cn': { month: 0, tt: 0, nsnn: 0, ngoai: 0 },
+            'tk': { month: 0, tt: 0, nsnn: 0, ngoai: 0 },
+            'tvc': { month: 0, tt: 0, nsnn: 0, ngoai: 0 },
+            'tv': { month: 0, tt: 0, nsnn: 0, ngoai: 0 },
+            'ktv': { month: 0, tt: 0, nsnn: 0, ngoai: 0 }
+        };
+
+        document.querySelectorAll('.calc-row').forEach(row => {
+            const hs = parseFloat(row.querySelector('.hs-input').value) || 0;
+            const people = parseFloat(row.querySelector('.people-input').value) || 0;
+            const dm = parseVND(row.querySelector('.dmcn-input').value); 
+            
+            let th = 0;
+            let tt = 0;
+            let roleId = '';
+            
+            // XỬ LÝ NHÁNH & GÁN CHỨC DANH
+            if(row.classList.contains('is-management')) {
+                // Nhóm I: Vẫn giữ quyền nhập số tháng bình thường
+                th = parseFloat(row.querySelector('.month-input').value) || 0;
+                tt = hs * people * dm * th * 0.2; // Nhân 20% tiền
+                roleId = row.getAttribute('data-role'); // Lấy 'cn' hoặc 'tk'
+            } else {
+                // Nhóm II: Tính số tháng dựa trên Số ngày / 22
+                const daysInput = row.querySelector('.days-input');
+                const days = daysInput ? (parseFloat(daysInput.value) || 0) : 0;
+                th = days / 22;
+                
+                // Hiển thị ra ô Số tháng
+                row.querySelector('.month-input').value = th > 0 ? Number(th.toFixed(2)) : "";
+                
+                tt = hs * dm * th; // Bỏ qua số người
+                const selectElem = row.querySelector('.role-select');
+                if(selectElem) roleId = selectElem.value; 
+            }
+            
+            row.querySelector('.row-tt').innerText = Math.round(tt).toLocaleString('vi-VN') + " đ";
+
+            const n1 = parseVND(row.querySelector('.n1').value);
+            const n2 = parseVND(row.querySelector('.n2').value);
+            const n3 = parseVND(row.querySelector('.n3').value);
+            const s_ns = n1 + n2 + n3;
+            row.querySelector('.row-nsnn-tot').innerText = Math.round(s_ns).toLocaleString('vi-VN') + " đ";
+
+            const o1 = parseVND(row.querySelector('.o1').value);
+            const o2 = parseVND(row.querySelector('.o2').value);
+            const o3 = parseVND(row.querySelector('.o3').value);
+            const s_og = o1 + o2 + o3;
+            row.querySelector('.row-ngoai-tot').innerText = Math.round(s_og).toLocaleString('vi-VN') + " đ";
+
+            // Báo đỏ sai phân bổ năm
+            if(tt > 0 && Math.abs((s_ns + s_og) - tt) > 1) { 
+                row.querySelector('.row-tt').style.color = "red";
+                row.querySelector('.row-tt').title = "Lỗi: Chia tiền phân bổ các năm chưa khớp với Tổng thù lao!";
+            } else {
+                row.querySelector('.row-tt').style.color = "#ff3b30";
+                row.querySelector('.row-tt').title = row.classList.contains('is-management') ? "Đã nhân 20%" : "";
+            }
+
+            // GOM DỮ LIỆU CHO BẢNG TỔNG HỢP
+            if (roleId && sumData[roleId]) {
+                if (roleId === 'cn' || roleId === 'tk') {
+                    sumData[roleId].month += (th * 0.2); // Tháng nhân 20%
+                } else {
+                    sumData[roleId].month += th; // Giữ nguyên tháng
+                }
+                sumData[roleId].tt += tt;
+                sumData[roleId].nsnn += s_ns;
+                sumData[roleId].ngoai += s_og;
+            }
+
+            if(!row.hasAttribute('data-parent-sub')) {
+                G_tt += tt; G_nsnn += s_ns; G_n1 += n1; G_n2 += n2; G_n3 += n3;
+                G_ngoai += s_og; G_o1 += o1; G_o2 += o2; G_o3 += o3;
+            }
+        });
+
+        let total_month = 0, total_tt = 0, total_nsnn = 0, total_ngoai = 0;
+        for (let r in sumData) {
+            document.getElementById(`sum_month_${r}`).innerText = sumData[r].month.toLocaleString('vi-VN', {maximumFractionDigits: 2});
+            document.getElementById(`sum_tt_${r}`).innerText = Math.round(sumData[r].tt).toLocaleString('vi-VN') + " đ";
+            document.getElementById(`sum_nsnn_${r}`).innerText = Math.round(sumData[r].nsnn).toLocaleString('vi-VN') + " đ";
+            document.getElementById(`sum_ngoai_${r}`).innerText = Math.round(sumData[r].ngoai).toLocaleString('vi-VN') + " đ";
+
+            total_month += sumData[r].month;
+            total_tt += sumData[r].tt;
+            total_nsnn += sumData[r].nsnn;
+            total_ngoai += sumData[r].ngoai;
+        }
+
+        document.getElementById('sum_month_all').innerText = total_month.toLocaleString('vi-VN', {maximumFractionDigits: 2});
+        document.getElementById('sum_tt_all').innerText = Math.round(total_tt).toLocaleString('vi-VN') + " đ";
+        document.getElementById('sum_nsnn_all').innerText = Math.round(total_nsnn).toLocaleString('vi-VN') + " đ";
+        document.getElementById('sum_ngoai_all').innerText = Math.round(total_ngoai).toLocaleString('vi-VN') + " đ";
+
+        let II_tt = 0, II_nsnn = 0, II_ngoai = 0;
+        document.querySelectorAll('.row-main-task').forEach(mainRow => {
+            const mainId = mainRow.getAttribute('data-main-id');
+            let M_tt = 0, M_nsnn = 0, M_ngoai = 0;
+
+            document.querySelectorAll(`.row-sub-task[data-parent-main="${mainId}"]`).forEach(subRow => {
+                const subId = subRow.getAttribute('data-sub-id');
+                let S_tt = 0, S_nsnn = 0, S_ngoai = 0;
+
+                document.querySelectorAll(`.row-person[data-parent-sub="${subId}"]`).forEach(pRow => {
+                    S_tt += parseVND(pRow.querySelector('.row-tt').innerText);
+                    S_nsnn += parseVND(pRow.querySelector('.row-nsnn-tot').innerText);
+                    S_ngoai += parseVND(pRow.querySelector('.row-ngoai-tot').innerText);
+                    
+                    G_n1 += parseVND(pRow.querySelector('.n1').value);
+                    G_n2 += parseVND(pRow.querySelector('.n2').value);
+                    G_n3 += parseVND(pRow.querySelector('.n3').value);
+                    G_o1 += parseVND(pRow.querySelector('.o1').value);
+                    G_o2 += parseVND(pRow.querySelector('.o2').value);
+                    G_o3 += parseVND(pRow.querySelector('.o3').value);
+                });
+
+                subRow.querySelector('.sum-tt-sub').innerText = Math.round(S_tt).toLocaleString('vi-VN') + " đ";
+                subRow.querySelector('.sum-nsnn-sub').innerText = Math.round(S_nsnn).toLocaleString('vi-VN') + " đ";
+                subRow.querySelector('.sum-ngoai-sub').innerText = Math.round(S_ngoai).toLocaleString('vi-VN') + " đ";
+                
+                M_tt += S_tt; M_nsnn += S_nsnn; M_ngoai += S_ngoai;
+            });
+
+            mainRow.querySelector('.sum-tt-main').innerText = Math.round(M_tt).toLocaleString('vi-VN') + " đ";
+            mainRow.querySelector('.sum-nsnn-main').innerText = Math.round(M_nsnn).toLocaleString('vi-VN') + " đ";
+            mainRow.querySelector('.sum-ngoai-main').innerText = Math.round(M_ngoai).toLocaleString('vi-VN') + " đ";
+            
+            II_tt += M_tt; II_nsnn += M_nsnn; II_ngoai += M_ngoai;
+        });
+
+        document.querySelector('.sum-tt-II').innerText = Math.round(II_tt).toLocaleString('vi-VN') + " đ";
+        document.querySelector('.sum-nsnn-II').innerText = Math.round(II_nsnn).toLocaleString('vi-VN') + " đ";
+        document.querySelector('.sum-ngoai-II').innerText = Math.round(II_ngoai).toLocaleString('vi-VN') + " đ";
+
+        G_tt += II_tt; G_nsnn += II_nsnn; G_ngoai += II_ngoai;
+
+        document.getElementById('grandTotal').innerText = Math.round(G_tt).toLocaleString('vi-VN') + " đ";
+        document.getElementById('grandNsnn').innerText = Math.round(G_nsnn).toLocaleString('vi-VN') + " đ";
+        document.getElementById('gN1').innerText = Math.round(G_n1).toLocaleString('vi-VN') + " đ";
+        document.getElementById('gN2').innerText = Math.round(G_n2).toLocaleString('vi-VN') + " đ";
+        document.getElementById('gN3').innerText = Math.round(G_n3).toLocaleString('vi-VN') + " đ";
+        
+        document.getElementById('grandNgoai').innerText = Math.round(G_ngoai).toLocaleString('vi-VN') + " đ";
+        document.getElementById('gO1').innerText = Math.round(G_o1).toLocaleString('vi-VN') + " đ";
+        document.getElementById('gO2').innerText = Math.round(G_o2).toLocaleString('vi-VN') + " đ";
+        document.getElementById('gO3').innerText = Math.round(G_o3).toLocaleString('vi-VN') + " đ";
+    }
+
+    window.onload = function() {
+        addMainTask();
+    }
+</script>
+
+</body>
+</html>
+

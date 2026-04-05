@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dự Toán - Khoản 5: Xây dựng, sửa chữa nhỏ</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f7; padding: 20px; color: #1d1d1f; margin: 0; }
+        .container { display: inline-block; min-width: 100%; box-sizing: border-box; margin: auto; background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); overflow: visible; }
+        h2 { text-align: center; color: #1d1d1f; border-bottom: 1px solid #e5e5ea; padding-bottom: 15px; text-transform: uppercase; font-weight: 600;}
+        
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; font-size: 13px; min-width: 1300px; box-shadow: 0 0 0 1px #e5e5ea; border-radius: 8px; overflow: hidden;}
+        th, td { border: 1px solid #e5e5ea; padding: 10px; text-align: center; vertical-align: middle; }
+        
+        /* Màu sắc Header 3 tầng */
+        th { color: #1d1d1f; padding: 12px 10px; font-weight: 600;}
+        .th-level-1 { background-color: #f5f5f7; border-bottom: 2px solid #d1d1d6; } 
+        .th-nsnn { background-color: #e5f9e7; } 
+        .th-ngoai { background-color: #fff1e0; } 
+        .th-sub-nsnn { background-color: #f0fdf4; font-size: 12px; font-weight: 600;}
+        .th-sub-ngoai { background-color: #fff7ed; font-size: 12px; font-weight: 600;}
+        
+        /* Input fields */
+        td input[type="text"] { width: 95%; padding: 8px; border: 1px solid #e5e5ea; border-radius: 6px; box-sizing: border-box; font-size: 13px; color: #1d1d1f; transition: 0.2s;}
+        td input[type="number"] { width: 90px; padding: 8px; text-align: right; border: 1px solid #e5e5ea; border-radius: 6px; font-size: 13px; transition: 0.2s;}
+        td input:focus { outline: none; border-color: #007aff; box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); }
+        
+        /* Highlight cho các cột tự động tính / Cột nhập tiền chính */
+        .kinhphi-input { background-color: #fff !important; border: 1px solid #007aff !important; font-weight: 600; color: #007aff;}
+        .col-tong-nsnn { font-weight: 600; color: #34c759; }
+        .col-tong-ngoai { font-weight: 600; color: #ff9f0a; }
+        
+        .row-sub-task { background-color: #ffffff; transition: 0.2s;}
+        .row-sub-task td { border-bottom: 1px solid #e5e5ea; }
+        .row-sub-task:hover { background-color: #fcfcfc; }
+        
+        .total-row { background-color: #f5f5f7; font-weight: 600; color: #1d1d1f; font-size: 14px; }
+        
+        /* Nút bấm Apple Style */
+        .btn-add-main { background-color: #007aff; color: white; padding: 12px 20px; font-size: 14px; margin-top: 15px; width: 100%; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: 0.2s;}
+        .btn-add-main:hover { background-color: #005bb5; }
+        
+        .btn-del { background-color: #ff3b30; color: white; padding: 6px 10px; font-size: 12px; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s;}
+        .btn-del:hover { background-color: #d70015; }
+    </style>
+<link rel='stylesheet' href='wizard-forms.css'>
+</head>
+<body>
+
+<div class="container">
+    <h2>Khoản 5. Xây dựng, sửa chữa nhỏ</h2>
+    <p style="text-align: center; color: #7f8c8d; font-style: italic;">Bạn có thể điền trực tiếp số mét vuông (m²) vào cột Nội dung.</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="3" width="4%" class="th-level-1">Số TT</th>
+                <th rowspan="3" width="25%" class="th-level-1">Nội dung</th>
+                <th rowspan="3" width="10%" class="th-level-1">Kinh phí (VNĐ)</th>
+                <th colspan="8" class="th-level-1">Nguồn vốn (VNĐ)</th>
+                <th rowspan="3" width="5%" class="th-level-1">Thao tác</th>
+            </tr>
+            <tr>
+                <th colspan="4" class="th-nsnn">Ngân sách nhà nước</th>
+                <th colspan="4" class="th-ngoai">Ngoài ngân sách nhà nước</th>
+            </tr>
+            <tr>
+                <th width="7%" class="th-sub-nsnn">Tổng</th>
+                <th width="7%" class="th-sub-nsnn">Năm thứ nhất</th>
+                <th width="7%" class="th-sub-nsnn">Năm thứ hai</th>
+                <th width="7%" class="th-sub-nsnn">Năm thứ ba</th>
+                
+                <th width="7%" class="th-sub-ngoai">Tổng</th>
+                <th width="7%" class="th-sub-ngoai">Năm thứ nhất</th>
+                <th width="7%" class="th-sub-ngoai">Năm thứ hai</th>
+                <th width="7%" class="th-sub-ngoai">Năm thứ ba</th>
+            </tr>
+        </thead>
+        <tbody id="constructionTable" oninput="calculateConstruction()">
+            </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td colspan="2" style="text-align: right;">TỔNG CỘNG KHOẢN 5:</td>
+                <td id="grandTotal" style="text-align: right; color: #ff9f43;">0 đ</td>
+                
+                <td id="grandTotalNsnn" style="text-align: right; color: #2ecc71;">0 đ</td>
+                <td id="grandY1Nsnn" style="text-align: right; font-weight: normal;">0 đ</td>
+                <td id="grandY2Nsnn" style="text-align: right; font-weight: normal;">0 đ</td>
+                <td id="grandY3Nsnn" style="text-align: right; font-weight: normal;">0 đ</td>
+                
+                <td id="grandTotalNgoai" style="text-align: right; color: #e67e22;">0 đ</td>
+                <td id="grandY1Ngoai" style="text-align: right; font-weight: normal;">0 đ</td>
+                <td id="grandY2Ngoai" style="text-align: right; font-weight: normal;">0 đ</td>
+                <td id="grandY3Ngoai" style="text-align: right; font-weight: normal;">0 đ</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <button class="btn-add-main" onclick="addRow('')">+ THÊM HẠNG MỤC SỬA CHỮA KHÁC</button>
+</div>
+
+<script>
+    // 4 dòng dữ liệu mẫu theo đúng form yêu cầu (đã thay m2 thành m²)
+    const defaultRows = [
+        "Chi phí xây dựng ..... m² nhà xưởng, PTN",
+        "Chi phí sửa chữa ..... m² nhà xưởng, PTN",
+        "Chi phí lắp đặt hệ thống điện, nước",
+        "Chi phí khác"
+    ];
+
+    // Hàm thêm dòng vào bảng
+    function addRow(defaultText) {
+        const tbody = document.getElementById('constructionTable');
+        const tr = document.createElement('tr');
+        tr.className = 'row-sub-task';
+        
+        tr.innerHTML = `
+            <td class="stt-col"></td>
+            <td><input type="text" value="${defaultText}" placeholder="Nhập nội dung xây dựng, sửa chữa..."></td>
+            <td><input type="number" class="kinhphi-input" value="0" min="0" step="1000000"></td>
+            
+            <td class="col-tong-nsnn row-nsnn-total">0 đ</td>
+            <td><input type="number" class="nsnn-y1" value="0" min="0" step="1000000"></td>
+            <td><input type="number" class="nsnn-y2" value="0" min="0" step="1000000"></td>
+            <td><input type="number" class="nsnn-y3" value="0" min="0" step="1000000"></td>
+            
+            <td class="col-tong-ngoai row-ngoai-total">0 đ</td>
+            <td><input type="number" class="ngoai-y1" value="0" min="0" step="1000000"></td>
+            <td><input type="number" class="ngoai-y2" value="0" min="0" step="1000000"></td>
+            <td><input type="number" class="ngoai-y3" value="0" min="0" step="1000000"></td>
+            
+            <td><button class="btn-del" onclick="deleteRow(this)">Xóa</button></td>
+        `;
+        
+        tbody.appendChild(tr);
+        updateNumbers();
+    }
+
+    // Nạp sẵn 4 dòng mặc định khi vừa mở trang
+    function initTable() {
+        defaultRows.forEach(text => {
+            addRow(text);
+        });
+    }
+
+    // Xóa dòng
+    function deleteRow(btn) {
+        btn.closest('tr').remove();
+        updateNumbers();
+        calculateConstruction();
+    }
+
+    // Đánh lại số thứ tự (1, 2, 3...)
+    function updateNumbers() {
+        document.querySelectorAll('#constructionTable tr').forEach((row, index) => {
+            row.querySelector('.stt-col').innerText = index + 1;
+        });
+    }
+
+    // Hàm tính toán ngang dọc
+    function calculateConstruction() {
+        let gTotal = 0;
+        let gNsnnTotal = 0, gNsnnY1 = 0, gNsnnY2 = 0, gNsnnY3 = 0;
+        let gNgoaiTotal = 0, gNgoaiY1 = 0, gNgoaiY2 = 0, gNgoaiY3 = 0;
+
+        document.querySelectorAll('#constructionTable tr').forEach(row => {
+            const kinhPhi = parseFloat(row.querySelector('.kinhphi-input').value) || 0;
+            gTotal += kinhPhi;
+
+            // Tính Tổng NSNN
+            const nY1 = parseFloat(row.querySelector('.nsnn-y1').value) || 0;
+            const nY2 = parseFloat(row.querySelector('.nsnn-y2').value) || 0;
+            const nY3 = parseFloat(row.querySelector('.nsnn-y3').value) || 0;
+            const nsnnSum = nY1 + nY2 + nY3;
+            row.querySelector('.row-nsnn-total').innerText = Math.round(nsnnSum).toLocaleString('vi-VN') + " đ";
+            
+            gNsnnTotal += nsnnSum;
+            gNsnnY1 += nY1; gNsnnY2 += nY2; gNsnnY3 += nY3;
+
+            // Tính Tổng Ngoài NSNN
+            const oY1 = parseFloat(row.querySelector('.ngoai-y1').value) || 0;
+            const oY2 = parseFloat(row.querySelector('.ngoai-y2').value) || 0;
+            const oY3 = parseFloat(row.querySelector('.ngoai-y3').value) || 0;
+            const ngoaiSum = oY1 + oY2 + oY3;
+            row.querySelector('.row-ngoai-total').innerText = Math.round(ngoaiSum).toLocaleString('vi-VN') + " đ";
+            
+            gNgoaiTotal += ngoaiSum;
+            gNgoaiY1 += oY1; gNgoaiY2 += oY2; gNgoaiY3 += oY3;
+            
+            // Cảnh báo đỏ nếu tổng phân bổ các năm khác Kinh phí gốc
+            const inputKinhPhi = row.querySelector('.kinhphi-input');
+            if(kinhPhi > 0 && (nsnnSum + ngoaiSum) !== kinhPhi) {
+                inputKinhPhi.style.color = "white";
+                inputKinhPhi.style.backgroundColor = "#e74c3c"; // Đỏ chóe báo lỗi
+                inputKinhPhi.title = "Cảnh báo: Phân bổ năm chưa khớp với Kinh phí!";
+            } else {
+                inputKinhPhi.style.color = "#c0392b";
+                inputKinhPhi.style.backgroundColor = "#fffacd"; // Vàng nhạt bình thường
+                inputKinhPhi.title = "";
+            }
+        });
+
+        // Đẩy số ra dòng Tổng cộng
+        document.getElementById('grandTotal').innerText = Math.round(gTotal).toLocaleString('vi-VN') + " đ";
+        
+        document.getElementById('grandTotalNsnn').innerText = Math.round(gNsnnTotal).toLocaleString('vi-VN') + " đ";
+        document.getElementById('grandY1Nsnn').innerText = Math.round(gNsnnY1).toLocaleString('vi-VN') + " đ";
+        document.getElementById('grandY2Nsnn').innerText = Math.round(gNsnnY2).toLocaleString('vi-VN') + " đ";
+        document.getElementById('grandY3Nsnn').innerText = Math.round(gNsnnY3).toLocaleString('vi-VN') + " đ";
+        
+        document.getElementById('grandTotalNgoai').innerText = Math.round(gNgoaiTotal).toLocaleString('vi-VN') + " đ";
+        document.getElementById('grandY1Ngoai').innerText = Math.round(gNgoaiY1).toLocaleString('vi-VN') + " đ";
+        document.getElementById('grandY2Ngoai').innerText = Math.round(gNgoaiY2).toLocaleString('vi-VN') + " đ";
+        document.getElementById('grandY3Ngoai').innerText = Math.round(gNgoaiY3).toLocaleString('vi-VN') + " đ";
+    }
+
+    // Chạy hàm tạo bảng khi vừa mở file
+    window.onload = function() {
+        initTable();
+    };
+</script>
+
+</body>
+</html>

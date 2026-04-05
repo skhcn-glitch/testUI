@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Lập Dự Toán KH&CN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0066CC;
+            --bg: #F5F9FF;
+            --text-main: #111827;
+            --text-light: #6B7280;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+        .header .logo {
+            font-size: 56px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+        }
+        .header p {
+            font-size: 18px;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .card-container {
+            display: flex;
+            gap: 40px;
+            max-width: 1000px;
+            padding: 0 20px;
+        }
+
+        .action-card {
+            background: #ffffff;
+            width: 320px;
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-main);
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 102, 204, 0.05);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            display: block;
+            cursor: pointer;
+            opacity: 0;
+            animation: fadeInUp 0.8s forwards;
+        }
+
+        .action-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 102, 204, 0.12);
+            border-color: rgba(0, 102, 204, 0.2);
+        }
+
+        .action-card.disabled {
+            cursor: not-allowed;
+            opacity: 0;
+            animation: fadeInUp 0.8s 0.2s forwards;
+        }
+        
+        .action-card.disabled:hover {
+            transform: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+            border-color: rgba(0, 102, 204, 0.05);
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #F0F7FF;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 24px;
+            transition: all 0.4s;
+        }
+
+        .action-card:hover .icon-circle {
+            background: var(--primary);
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .action-card.disabled .icon-circle {
+            background: #F3F4F6;
+            color: #9CA3AF;
+        }
+        .action-card.disabled:hover .icon-circle {
+            background: #F3F4F6;
+            color: #9CA3AF;
+            transform: none;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        p.desc {
+            font-size: 15px;
+            color: var(--text-light);
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        .btn-fake {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .action-card:hover .btn-fake {
+            gap: 12px;
+        }
+
+        .badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #F3F4F6;
+            color: #6B7280;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .card-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 24px;
+            }
+            .header h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <i class="fa-solid fa-wallet logo"></i>
+        <h1>Hệ Thống Lập Dự Toán</h1>
+        <p>Chọn phương thức lập biểu mẫu quyết toán phù hợp.</p>
+    </div>
+
+    <div class="card-container">
+        <!-- ĐỀ TÀI (Active) -->
+        <a href="detai.html" class="action-card">
+            <div class="icon-circle">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+            <h2>Lập Quyết Toán Đề Tài</h2>
+            <p class="desc">Phân bổ nguồn kinh phí ngân sách nhà nước hoặc tổ chức (K1 đến K6).</p>
+            <div class="btn-fake">Tiếp tục <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
+
+        <!-- DỰ ÁN (Disabled / Coming soon) -->
+        <div class="action-card disabled">
+            <div class="badge"><i class="fa-solid fa-clock"></i> Sắp ra mắt</div>
+            <div class="icon-circle">
+                <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <h2 style="color: #9CA3AF;">Lập Quyết Toán Dự Án</h2>
+            <p class="desc">Chức năng quản lý các dự án chuyên sâu đang được phát triển.</p>
+            <div class="btn-fake" style="color: #9CA3AF;">Chưa sẵn sàng</div>
+        </div>
+    </div>
+
+</body>
+</html>
